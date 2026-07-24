@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trikomi Sportswear Configurator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div id="app" style="position: relative; width: 100vw; height: 100vh; overflow: hidden; font-family: 'Inter', system-ui, -apple-system, sans-serif; background: #f8fafc;">
+    
+    <!-- 3D Canvas Area -->
+    <div id="three-container" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;"></div>
+    
+    <!-- Header Overlay -->
+    <div style="position: absolute; top: 32px; left: 32px; background: rgba(255, 255, 255, 0.65); padding: 16px 32px; border-radius: 20px; backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border: 1px solid rgba(255, 255, 255, 0.4); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06); z-index: 10; display: flex; align-items: center; gap: 16px;">
+      <img src="../shared-assets/logos/jersey.png" style="height: 40px; width: auto; object-fit: contain;" alt="Sportswear Configurator" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\' viewBox=\'0 0 24 24\'><path fill=\'%236366f1\' d=\'M21,10.5V19a2,2 0 0,1 -2,2H5a2,2 0 0,1 -2,-2V10.5l3,-3.5h12ZM14.5,12a2.5,2.5 0 0,0 -5,0V14.5a2.5,2.5 0 0,0 5,0Z\'/></svg>'">
+      <div>
+        <h1 style="margin: 0; font-size: 24px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; line-height: 1.1;">
+          Trikomi
+        </h1>
+        <div style="font-size: 11px; color: #64748b; margin-top: 2px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;">Sportswear Configurator</div>
+      </div>
+    </div>
+
+    <!-- Mobile Toggle Button -->
+    <button id="mobile-toggle-btn" class="mobile-toggle-btn" aria-label="Toggle Sidebar">
+      <svg class="icon-menu" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+      <svg class="icon-close" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    <!-- Configuration Sidebar Wrapper -->
+    <div id="sidebar-wrapper" class="sidebar-wrapper">
+      <div class="sidebar">
+        <h2 class="title">Customize</h2>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 24px;">
+          <button class="btn-primary view-btn" data-view="front" style="padding: 8px; font-size: 12px; background: rgba(255,255,255,0.1); box-shadow: none;">Front View</button>
+          <button class="btn-primary view-btn" data-view="back" style="padding: 8px; font-size: 12px; background: rgba(255,255,255,0.1); box-shadow: none;">Back View</button>
+          <button class="btn-primary view-btn" data-view="left" style="padding: 8px; font-size: 12px; background: rgba(255,255,255,0.1); box-shadow: none;">Left View</button>
+          <button class="btn-primary view-btn" data-view="right" style="padding: 8px; font-size: 12px; background: rgba(255,255,255,0.1); box-shadow: none;">Right View</button>
+        </div>
+
+        <div style="margin-bottom: 24px;">
+          <h3 style="font-size: 10px; font-weight: bold; color: #8892b0; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px;">FABRIC MATERIAL</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+            <button class="btn-primary fabric-btn active-fabric" data-fabric="mesh" style="padding: 8px; font-size: 12px; background: #5865F2; box-shadow: none; transition: background 0.2s;">Mesh</button>
+            <button class="btn-primary fabric-btn" data-fabric="knit" style="padding: 8px; font-size: 12px; background: rgba(255,255,255,0.1); box-shadow: none; transition: background 0.2s;">Knit</button>
+            <button class="btn-primary fabric-btn" data-fabric="smooth" style="padding: 8px; font-size: 12px; background: rgba(255,255,255,0.1); box-shadow: none; transition: background 0.2s;">Smooth</button>
+          </div>
+        </div>
+
+        <div id="colors-container" style="display: flex; flex-direction: column; gap: 8px;">
+          <!-- Color parts will be injected here -->
+        </div>
+
+        <h3 class="section-title">Graphics</h3>
+
+        <label class="btn-primary" style="margin-bottom: 16px;">
+          + Upload Logo
+          <input type="file" id="upload-logo" accept="image/*" style="display: none;" />
+        </label>
+
+        <div id="logos-container" style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- Logos will be injected here -->
+        </div>
+
+        <h3 class="section-title">Typography</h3>
+
+        <button id="add-text-btn" class="btn-primary" style="margin-bottom: 16px;">
+          + Add Text
+        </button>
+
+        <div id="texts-container" style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- Texts will be injected here -->
+        </div>
+        
+        <div style="margin-top: 32px; margin-bottom: 8px;">
+          <button id="generate-order-btn" class="btn-primary" style="width: 100%; padding: 12px; font-size: 14px; background: linear-gradient(135deg, #6366f1, #4f46e5); box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); text-transform: uppercase; letter-spacing: 1px;">
+            Generate Order Form
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Model Switcher UI -->
+    <div style="position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 20px; background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(12px); padding: 12px 24px; border-radius: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); z-index: 10;">
+      <button id="prev-model-btn" style="background: none; border: none; cursor: pointer; font-size: 24px; color: #0f172a; display: flex; align-items: center;">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+
+      <div id="model-name-display" style="font-weight: 600; font-size: 14px; color: #0f172a; min-width: 120px; text-align: center;">
+        Rugby Jersey
+      </div>
+
+      <button id="next-model-btn" style="background: none; border: none; cursor: pointer; font-size: 24px; color: #0f172a; display: flex; align-items: center;">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.7); display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: 600; color: #333; z-index: 20;">
+      Loading 3D Model...
+    </div>
+
+  </div>
+
+  <!-- Load Three.js and dependencies (assuming they might be needed globally or via import maps, but we use ESM) -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

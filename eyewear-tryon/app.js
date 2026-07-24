@@ -128,8 +128,9 @@ $(document).ready(function () {
   // Helper: Apply Preserved Material Colors to 3D Scene
   // -------------------------------------------------------------
   function applyPreservedColorsToScene() {
-    if (!viewer || !viewer.scene || !store.materialProps) return;
-    viewer.scene.traverse((node) => {
+    if (!store.materialProps) return;
+    
+    const applyToNode = (node) => {
       if (node.isMesh && node.material) {
         const mats = Array.isArray(node.material) ? node.material : [node.material];
         mats.forEach(mat => {
@@ -140,7 +141,14 @@ $(document).ready(function () {
           }
         });
       }
-    });
+    };
+
+    if (viewer && viewer.scene) {
+      viewer.scene.traverse(applyToNode);
+    }
+    if (eighthWallSDK && eighthWallSDK.faceGroup) {
+      eighthWallSDK.faceGroup.traverse(applyToNode);
+    }
   }
 
   // -------------------------------------------------------------
@@ -157,15 +165,14 @@ $(document).ready(function () {
         if (!store.materialProps[matName]) store.materialProps[matName] = {};
         store.materialProps[matName].color = colorHex;
 
-        if (store.isArActive) {
-          // AR Mode Color Change via 8thWall SDK
-          if (eighthWallSDK) eighthWallSDK.changeColor(matName, colorHex);
-        } else {
-          // 3D Studio Mode Color Change Direct Traversal
-          applyPreservedColorsToScene();
+        if (store.isArActive && eighthWallSDK) {
+          eighthWallSDK.changeColor(matName, colorHex);
         }
       }
     });
+    
+    // Explicitly apply to current active scene/AR group
+    applyPreservedColorsToScene();
   }
 
   // -------------------------------------------------------------
@@ -195,14 +202,18 @@ $(document).ready(function () {
 
       if (eighthWallSDK) {
         eighthWallSDK.initialize();
-        eighthWallSDK.changeModel(store.modelIndex);
+        eighthWallSDK.changeModel(store.modelIndex).then(() => {
+          applyPreservedColorsToScene();
+        }).catch(console.error);
       }
+      $('#attribution-overlay').removeClass('hidden');
     } else {
       // EXIT AR MODE -> BACK TO 3D STUDIO
       console.log("🎥 Returning to 3D Studio scene...");
       $('#ar-status-dot').css({ background: '#06b6d4', boxShadow: '0 0 8px #06b6d4' });
       $('#ar-status-text').text('3D Studio Mode (8thWall Offline)');
       $('#btn-toggle-camera').html('<span>📷</span> Enable 8thWall AR Try-On');
+      $('#attribution-overlay').addClass('hidden');
 
       if (eighthWallSDK) {
         eighthWallSDK.stop();
@@ -240,7 +251,11 @@ $(document).ready(function () {
       store.modelIndex = idx;
 
       if (store.isArActive) {
-        if (eighthWallSDK) eighthWallSDK.changeModel(idx);
+        if (eighthWallSDK) {
+          eighthWallSDK.changeModel(idx).then(() => {
+            applyPreservedColorsToScene();
+          }).catch(console.error);
+        }
       } else {
         load3DStudioModel(idx);
       }
@@ -293,15 +308,42 @@ $(document).ready(function () {
 
   $('#tb-snapshot').on('click', function () {
     console.log("📸 Taking HD snapshot...");
-    if (viewer && viewer.renderer && viewer.scene && viewer.camera) {
-      if (viewer.isInitialized) {
-        viewer.renderer.render(viewer.scene, viewer.camera);
+    
+    let canvasElement = null;
+    let filePrefix = '3d';
+
+    if (store.isArActive && typeof window.XR8 !== 'undefined') {
+      try {
+        const xrScene = window.XR8.Threejs.xrScene();
+        if (xrScene && xrScene.renderer) {
+          xrScene.renderer.render(xrScene.scene, xrScene.camera);
+          canvasElement = xrScene.renderer.domElement;
+        }
+      } catch (err) {}
+      if (!canvasElement) canvasElement = document.getElementById('camerafeed') || document.querySelector('canvas');
+      filePrefix = 'ar';
+    } else {
+      if (viewer && viewer.renderer && viewer.scene && viewer.camera) {
+        if (viewer.isInitialized) {
+          viewer.renderer.render(viewer.scene, viewer.camera);
+        }
+        canvasElement = viewer.renderer.domElement;
       }
-      const dataUrl = viewer.renderer.domElement.toDataURL('image/png');
-      const link = document.createElement('a');
-      link.href = dataUrl;
-      link.download = `3d-${(store.activeModelName || 'glasses').toLowerCase().replace(/\s+/g, '-')}-snapshot.png`;
-      link.click();
+    }
+
+    if (canvasElement) {
+      try {
+        const dataUrl = canvasElement.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = `${filePrefix}-${(store.activeModelName || 'glasses').toLowerCase().replace(/\s+/g, '-')}-snapshot.png`;
+        link.click();
+      } catch (err) {
+        console.warn("⚠️ Failed to generate snapshot:", err);
+        alert("Snapshot failed. This might be due to WebGL preserveDrawingBuffer settings in AR mode.");
+      }
+    } else {
+      console.warn("⚠️ Could not locate rendering canvas for snapshot.");
     }
   });
 

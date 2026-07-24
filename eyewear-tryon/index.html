@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <!--
-  Powered by 8th Wall Engine & Trikomi WebGPU Engine
+  Powered by 8th Wall Engine
   Copyright (c) 2026 Niantic Spatial, Inc. All rights reserved.
+  The engine is provided under the Distributed Engine Binary License.
+  See https://8thwall.org/docs/migration/faq for details.
 -->
 <html lang="en">
 
@@ -38,6 +40,18 @@
   <!-- Main Viewport Container -->
   <div id="viewport-container">
     <div id="canvas-container"></div>
+
+    <!-- AR Attribution Overlay (Top Right) -->
+    <div id="attribution-overlay" class="hidden">
+      <div class="attribution-badge">
+        <span class="attr-label">Developed by</span>
+        <span class="attr-value">VictorShell</span>
+      </div>
+      <div class="attribution-badge">
+        <span class="attr-label">Powered by</span>
+        <span class="attr-value">8th Wall</span>
+      </div>
+    </div>
 
     <!-- Glassmorphic AR Control Panel Sidebar -->
     <div id="sidebar-panel" class="sidebar-container">
