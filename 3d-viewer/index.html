@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trikomi 3D Viewer – Vanilla JS Studio</title>
+  <meta name="description" content="Glassmorphic 3D Viewer powered by @trikomi/core WebGPU engine and jQuery. Designed for Shopify & WooCommerce storefronts.">
+  <link rel="icon" href="../shared-assets/svgs/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+
+  <!-- Shared jQuery Dependency -->
+  <script src="../shared-assets/lib/jquery.min.js"></script>
+</head>
+
+<body>
+  <!-- Initial Loading Overlay -->
+  <div id="loading-overlay">
+    <div class="spinner-circle"></div>
+    <div class="loading-text">Loading WebGPU Engine...</div>
+  </div>
+
+  <!-- Main Viewport -->
+  <div id="viewport-container">
+    <div id="canvas-container"></div>
+
+    <!-- Glassmorphic Sidebar Container (Identical to React Sidebar.tsx) -->
+    <div id="sidebar-panel" class="sidebar-container">
+      <div class="sidebar-header">
+        <div class="title-gradient">TRIKOMI 3D</div>
+        <div class="subtitle">Vanilla JS ESM · Shopify & WooCommerce</div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- Active Model Status Badge -->
+      <div class="model-badge">
+        <span class="status-indicator active"></span>
+        <span id="active-model-name" class="model-name">Glasses Frame 1</span>
+      </div>
+
+      <!-- 3D Model Selector -->
+      <div class="section">
+        <div class="section-label">3D Model Variant</div>
+        <select id="select-model" class="select-dropdown">
+          <option value="../shared-assets/models/glasses1.glb">Glasses Frame 1 (Classic)</option>
+          <option value="../shared-assets/models/glasses2.glb">Glasses Frame 2 (Modern)</option>
+          <option value="../shared-assets/models/ring.glb">Solitaire Ring (Diamond)</option>
+          <option value="../shared-assets/models/raccoon_head_small.glb">Raccoon Avatar</option>
+        </select>
+      </div>
+
+      <!-- Material Finish Preset Cards -->
+      <div class="section">
+        <div class="section-label">Material Finish</div>
+        <div class="color-preset-grid">
+          <button class="color-preset-card material-card active" data-material-color="#ffd700">
+            <span class="color-dot" style="background: #ffd700;"></span>
+            <span class="color-preset-name">Yellow Gold</span>
+          </button>
+          <button class="color-preset-card material-card" data-material-color="#e5e4e2">
+            <span class="color-dot" style="background: #e5e4e2;"></span>
+            <span class="color-preset-name">Platinum</span>
+          </button>
+          <button class="color-preset-card material-card" data-material-color="#b76e79">
+            <span class="color-dot" style="background: #b76e79;"></span>
+            <span class="color-preset-name">Rose Gold</span>
+          </button>
+          <button class="color-preset-card material-card" data-material-color="#111111">
+            <span class="color-dot" style="background: #111111;"></span>
+            <span class="color-preset-name">Matte Black</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- HDR Lighting Environment Preset -->
+      <div class="section">
+        <div class="section-label">HDR Lighting Preset</div>
+        <select id="select-env" class="select-dropdown">
+          <option value="../shared-assets/environments/studio.exr">Studio Softbox</option>
+          <option value="../shared-assets/environments/diamond_env.exr">Jewelry Diamond Studio</option>
+          <option value="../shared-assets/environments/christmas_photo_studio_04_1k.exr">Warm Photo Studio</option>
+        </select>
+      </div>
+
+      <!-- Background Color Presets -->
+      <div class="section">
+        <div class="section-label">Background Style</div>
+        <div class="color-preset-grid">
+          <button class="color-preset-card bg-card active" data-color="#0d1117">
+            <span class="color-dot" style="background: #0d1117;"></span>
+            <span class="color-preset-name">Dark Void</span>
+          </button>
+          <button class="color-preset-card bg-card" data-color="#1e293b">
+            <span class="color-dot" style="background: #1e293b;"></span>
+            <span class="color-preset-name">Slate Blue</span>
+          </button>
+          <button class="color-preset-card bg-card" data-color="#ffffff">
+            <span class="color-dot" style="background: #ffffff;"></span>
+            <span class="color-preset-name">Pure White</span>
+          </button>
+          <button class="color-preset-card bg-card" data-color="#0f172a">
+            <span class="color-dot" style="background: #0f172a;"></span>
+            <span class="color-preset-name">Midnight</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Render Toggles -->
+      <div class="section">
+        <div class="section-label">Render Options</div>
+        <div class="toggle-row">
+          <span>HDR Reflections</span>
+          <button id="toggle-reflections-btn" class="toggle-btn active">ON</button>
+        </div>
+        <div class="toggle-row">
+          <span>Auto Rotation</span>
+          <button id="toggle-autorotate-btn" class="toggle-btn active">ON</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Capsule Toolbar (Identical to React Toolbar.tsx) -->
+    <div class="toolbar-container">
+      <button id="tb-toggle-sidebar" class="toolbar-btn active" title="Toggle Controls Sidebar">⚙️</button>
+      <button id="tb-autorotate" class="toolbar-btn active" title="Toggle Auto-Rotate">🔄</button>
+      <button id="tb-reset" class="toolbar-btn" title="Reset Camera View">🎥</button>
+      <button id="tb-snapshot" class="toolbar-btn" title="Take HD Snapshot">📸</button>
+      <button id="tb-fullscreen" class="toolbar-btn" title="Toggle Fullscreen">⛶</button>
+    </div>
+  </div>
+
+  <!-- Native ES Module Application Script -->
+  <script type="module" src="./app.js"></script>
+</body>
+
+</html>

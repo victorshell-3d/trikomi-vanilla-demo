@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<!--
+  Powered by 8th Wall Engine & Trikomi WebGPU Engine
+  Copyright (c) 2026 Niantic Spatial, Inc. All rights reserved.
+-->
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trikomi 3D AR Eyewear Virtual Try-On – 8thWall AR Studio</title>
+  <meta name="description" content="AR Eyewear Virtual Try-On powered by @trikomi/core WebGPU engine and 8thWall Face Controller WebAR Engine.">
+  <link rel="icon" href="../shared-assets/svgs/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+
+  <!-- Shared jQuery Dependency -->
+  <script src="../shared-assets/lib/jquery.min.js"></script>
+
+  <!-- 8th Wall requires these scripts to be loaded for its XR tracking -->
+  <script src="../shared-assets/lib/xr.js" async data-preload-chunks="face,slam"></script>
+  <script src="../shared-assets/lib/xrextras.js"></script>
+  <script src="../shared-assets/lib/landing-page.js"></script>
+</head>
+
+<body>
+  <!-- Initial Loading Overlay -->
+  <div id="loading-overlay">
+    <div class="spinner-circle"></div>
+    <div class="loading-text">Initializing 3D Engine & WebGPU...</div>
+  </div>
+
+  <!-- Hidden HTML5 Video Element for WebCam Face Tracking -->
+  <video id="webcam-video" playsinline muted></video>
+
+  <!-- Main Viewport Container -->
+  <div id="viewport-container">
+    <div id="canvas-container"></div>
+
+    <!-- Glassmorphic AR Control Panel Sidebar -->
+    <div id="sidebar-panel" class="sidebar-container">
+      <div class="brand-header">
+        <img src="../shared-assets/logos/trikomi.png" alt="Trikomi Logo">
+        <div>
+          <div class="title-gradient">TRIKOMI AR EYEWEAR</div>
+          <div class="subtitle">Vanilla JS ESM · 8thWall WebAR</div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- Active AR Status Badge -->
+      <div class="status-badge">
+        <span id="ar-status-dot" class="status-dot"></span>
+        <span id="ar-status-text">3D Studio Mode (8thWall Offline)</span>
+      </div>
+
+      <!-- Live 8thWall WebCam Toggle Button -->
+      <button id="btn-toggle-camera" class="camera-btn">
+        <span>📷</span> Enable 8thWall AR Try-On
+      </button>
+
+      <!-- Glasses Frame Selector Grid -->
+      <div class="section">
+        <div class="section-label">Select Eyewear Frame</div>
+        <div class="eyewear-grid">
+          <button class="frame-card active" data-index="0" data-model="../shared-assets/models/glasses1.glb" data-name="Aviator Classic">
+            <span>👓 Aviator Classic</span>
+          </button>
+          <button class="frame-card" data-index="1" data-model="../shared-assets/models/glasses2.glb" data-name="Sport Wrap">
+            <span>🕶️ Sport Wrap</span>
+          </button>
+          <button class="frame-card" data-index="2" data-model="../shared-assets/models/glasses3.glb" data-name="Wayfarer Style">
+            <span>🕶️ Wayfarer Style</span>
+          </button>
+          <button class="frame-card" data-index="3" data-model="../shared-assets/models/glasses4.glb" data-name="Round Metal">
+            <span>👓 Round Metal</span>
+          </button>
+          <button class="frame-card" data-index="4" data-model="../shared-assets/models/glasses5.glb" data-name="Clubmaster">
+            <span>👓 Clubmaster</span>
+          </button>
+          <button class="frame-card" data-index="5" data-model="../shared-assets/models/glasses6.glb" data-name="Hexagonal">
+            <span>👓 Hexagonal</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Frame Material Color Swatches -->
+      <div class="section">
+        <div class="section-label">Frame Material Finish</div>
+        <div class="swatch-grid">
+          <button class="swatch-card frame-swatch active" data-color="#111111" data-name="Matte Black">
+            <span class="color-dot" style="background: #111111;"></span>
+            <span class="swatch-name">Matte Black</span>
+          </button>
+          <button class="swatch-card frame-swatch" data-color="#ffd700" data-name="Polished Gold">
+            <span class="color-dot" style="background: #ffd700;"></span>
+            <span class="swatch-name">Gold</span>
+          </button>
+          <button class="swatch-card frame-swatch" data-color="#e5e4e2" data-name="Silver Chrome">
+            <span class="color-dot" style="background: #e5e4e2;"></span>
+            <span class="swatch-name">Silver</span>
+          </button>
+          <button class="swatch-card frame-swatch" data-color="#b76e79" data-name="Rose Gold">
+            <span class="color-dot" style="background: #b76e79;"></span>
+            <span class="swatch-name">Rose Gold</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Lens Tint Swatches -->
+      <div class="section">
+        <div class="section-label">Lens Tint & Polarized Shader</div>
+        <div class="swatch-grid">
+          <button class="swatch-card lens-swatch active" data-color="#1a202c" data-name="Clear Optical">
+            <span class="color-dot" style="background: rgba(255,255,255,0.4); border: 1px solid #fff;"></span>
+            <span class="swatch-name">Clear</span>
+          </button>
+          <button class="swatch-card lens-swatch" data-color="#0f172a" data-name="Dark Smoke">
+            <span class="color-dot" style="background: #0f172a;"></span>
+            <span class="swatch-name">Dark Smoke</span>
+          </button>
+          <button class="swatch-card lens-swatch" data-color="#0284c7" data-name="Ocean Blue">
+            <span class="color-dot" style="background: #0284c7;"></span>
+            <span class="swatch-name">Ocean Blue</span>
+          </button>
+          <button class="swatch-card lens-swatch" data-color="#ca8a04" data-name="Sunset Gold">
+            <span class="color-dot" style="background: #ca8a04;"></span>
+            <span class="swatch-name">Sunset Gold</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Capsule Toolbar -->
+    <div class="toolbar-container">
+      <button id="tb-toggle-sidebar" class="toolbar-btn active" title="Toggle AR Settings Panel">⚙️</button>
+      <button id="tb-autorotate" class="toolbar-btn active" title="Toggle 360 Rotation">🔄</button>
+      <button id="tb-reset" class="toolbar-btn" title="Reset View">🎥</button>
+      <button id="tb-snapshot" class="toolbar-btn" title="Take HD Snapshot">📸</button>
+      <button id="tb-fullscreen" class="toolbar-btn" title="Toggle Fullscreen">⛶</button>
+    </div>
+  </div>
+
+  <!-- Native ES Module Application Script -->
+  <script type="module" src="./app.js"></script>
+</body>
+
+</html>

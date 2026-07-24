@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trikomi 3D Jewelry Configurator – Vanilla JS Studio</title>
+  <meta name="description" content="3D Diamond & Ring Configurator powered by @trikomi/core WebGPU engine and jQuery. Built for Shopify & WooCommerce luxury stores.">
+  <link rel="icon" href="../shared-assets/svgs/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+
+  <!-- Shared jQuery Dependency -->
+  <script src="../shared-assets/lib/jquery.min.js"></script>
+</head>
+
+<body>
+  <!-- Initial Loading Overlay -->
+  <div id="loading-overlay">
+    <div class="spinner-circle"></div>
+    <div class="loading-text">Loading WebGPU Jewelry Engine...</div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast-notification">
+    <span>🛒</span>
+    <span id="toast-message">Item added to your shopping cart!</span>
+  </div>
+
+  <!-- Main Viewport Container -->
+  <div id="viewport-container">
+    <div id="canvas-container"></div>
+
+    <!-- Glassmorphic Jewelry Configurator Sidebar -->
+    <div id="sidebar-panel" class="sidebar-container">
+      <div class="brand-header">
+        <img src="../shared-assets/logos/trikomi.png" alt="Logo">
+        <div>
+          <div class="title-gradient">TRIKOMI JEWELRY</div>
+          <div class="subtitle">Vanilla JS ESM · Shopify PDP</div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <!-- Product PDP Price Card -->
+      <div class="price-card">
+        <div id="pdp-title" class="product-name">Classic Solitaire Ring</div>
+        <div class="product-rating">★★★★★ <span>4.9 (128 reviews)</span></div>
+        <div id="pdp-price" class="product-price">$2,450.00</div>
+      </div>
+
+      <!-- Ring Model Selector -->
+      <div class="section">
+        <div class="section-label">Ring Setting Design</div>
+        <select id="select-ring" class="select-dropdown">
+          <option value="../shared-assets/models/ring.glb" data-base-price="2450">Classic Solitaire Setting</option>
+          <option value="../shared-assets/models/ring2.glb" data-base-price="3100">Halo Diamond Setting</option>
+        </select>
+      </div>
+
+      <!-- Gemstone Finish Selector -->
+      <div class="section">
+        <div class="section-label">Center Gemstone</div>
+        <div class="preset-grid">
+          <button class="preset-card gem-card active" data-gem-color="#ffffff" data-gem-name="Diamond" data-add-price="0">
+            <span class="color-dot" style="background: #ffffff; box-shadow: 0 0 6px rgba(255,255,255,0.8);"></span>
+            <span class="preset-name">Pure Diamond</span>
+          </button>
+          <button class="preset-card gem-card" data-gem-color="#00ff88" data-gem-name="Emerald" data-add-price="400">
+            <span class="color-dot" style="background: #00ff88;"></span>
+            <span class="preset-name">Emerald</span>
+          </button>
+          <button class="preset-card gem-card" data-gem-color="#0077ff" data-gem-name="Sapphire" data-add-price="350">
+            <span class="color-dot" style="background: #0077ff;"></span>
+            <span class="preset-name">Royal Sapphire</span>
+          </button>
+          <button class="preset-card gem-card" data-gem-color="#ff0055" data-gem-name="Ruby" data-add-price="500">
+            <span class="color-dot" style="background: #ff0055;"></span>
+            <span class="preset-name">Crimson Ruby</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Metal Band Finish Selector -->
+      <div class="section">
+        <div class="section-label">Precious Metal Band</div>
+        <div class="preset-grid">
+          <button class="preset-card metal-card active" data-metal-color="#ffd700" data-metal-name="18K Yellow Gold" data-add-price="0">
+            <span class="color-dot" style="background: #ffd700;"></span>
+            <span class="preset-name">18K Yellow Gold</span>
+          </button>
+          <button class="preset-card metal-card" data-metal-color="#e5e4e2" data-metal-name="Platinum" data-add-price="600">
+            <span class="color-dot" style="background: #e5e4e2;"></span>
+            <span class="preset-name">Platinum</span>
+          </button>
+          <button class="preset-card metal-card" data-metal-color="#b76e79" data-metal-name="Rose Gold" data-add-price="150">
+            <span class="color-dot" style="background: #b76e79;"></span>
+            <span class="preset-name">Rose Gold</span>
+          </button>
+          <button class="preset-card metal-card" data-metal-color="#111111" data-metal-name="Black Titanium" data-add-price="250">
+            <span class="color-dot" style="background: #111111;"></span>
+            <span class="preset-name">Black Titanium</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Carat Weight Selector -->
+      <div class="section">
+        <div class="section-label">Carat Weight</div>
+        <div class="size-grid">
+          <button class="size-btn carat-btn" data-carat="0.75" data-add-price="-300">0.75 CT</button>
+          <button class="size-btn carat-btn active" data-carat="1.00" data-add-price="0">1.00 CT</button>
+          <button class="size-btn carat-btn" data-carat="1.50" data-add-price="850">1.50 CT</button>
+          <button class="size-btn carat-btn" data-carat="2.00" data-add-price="1800">2.00 CT</button>
+        </div>
+      </div>
+
+      <!-- Ring Size Selector -->
+      <div class="section">
+        <div class="section-label">Finger Size</div>
+        <div class="size-grid">
+          <button class="size-btn ring-size-btn" data-size="US 6">US 6</button>
+          <button class="size-btn ring-size-btn active" data-size="US 7">US 7</button>
+          <button class="size-btn ring-size-btn" data-size="US 8">US 8</button>
+          <button class="size-btn ring-size-btn" data-size="US 9">US 9</button>
+        </div>
+      </div>
+
+      <!-- Primary Add to Cart Button -->
+      <button id="btn-add-to-cart" class="cart-btn">
+        <span>🛒</span> Add to Shopping Cart
+      </button>
+    </div>
+
+    <!-- Floating Capsule Toolbar -->
+    <div class="toolbar-container">
+      <button id="tb-toggle-sidebar" class="toolbar-btn active" title="Toggle Configurator Panel">⚙️</button>
+      <button id="tb-autorotate" class="toolbar-btn active" title="Toggle 360 Spin">🔄</button>
+      <button id="tb-reset" class="toolbar-btn" title="Reset View">🎥</button>
+      <button id="tb-snapshot" class="toolbar-btn" title="Take HD Snapshot">📸</button>
+      <button id="tb-fullscreen" class="toolbar-btn" title="Toggle Fullscreen">⛶</button>
+    </div>
+  </div>
+
+  <!-- Native ES Module Application Script -->
+  <script type="module" src="./app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%" style="background: #111318; font-family: 'Outfit', 'Inter', sans-serif;">
+  <defs>
+    <!-- Gradients -->
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#5865F2" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#111318" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22d3ee" />
+      <stop offset="100%" stop-color="#0d9488" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background glow -->
+  <rect width="600" height="600" fill="#111318" />
+  <circle cx="300" cy="300" r="280" fill="url(#glow)" />
+
+  <!-- Outer Guide Grid -->
+  <circle cx="300" cy="300" r="250" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1" />
+  <circle cx="300" cy="300" r="180" fill="none" stroke="rgba(255,255,255,0.02)" stroke-width="1" />
+
+  <!-- Stylized Face Contour -->
+  <path d="M 160 250 C 160 120, 440 120, 440 250 C 440 370, 370 470, 300 470 C 230 470, 160 370, 160 250 Z" 
+        fill="none" stroke="rgba(255, 255, 255, 0.1)" stroke-width="2" stroke-dasharray="5, 5" />
+
+  <!-- Ears (Contours) -->
+  <!-- Left Ear Landmark 454 Area -->
+  <path d="M 440 220 Q 465 240 440 280" fill="none" stroke="rgba(255, 255, 255, 0.15)" stroke-width="3" />
+  <!-- Right Ear Landmark 234 Area -->
+  <path d="M 160 220 Q 135 240 160 280" fill="none" stroke="rgba(255, 255, 255, 0.15)" stroke-width="3" />
+
+  <!-- Eyes Guides -->
+  <!-- Right Eye -->
+  <ellipse cx="230" cy="220" rx="25" ry="12" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" />
+  <!-- Left Eye -->
+  <ellipse cx="370" cy="220" rx="25" ry="12" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" />
+
+  <!-- Nose Outline -->
+  <path d="M 300 200 L 290 280 L 300 290 L 310 280 Z" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" />
+
+  <!-- Mouth Outline -->
+  <path d="M 260 350 Q 300 370 340 350 Q 300 390 260 350" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" />
+
+  <!-- ================= MEASUREMENT LINES ================= -->
+  
+  <!-- 1. IPD (Interpupillary Distance) Line (468 to 473) -->
+  <line x1="230" y1="220" x2="370" y2="220" stroke="url(#cyanGrad)" stroke-width="2.5" stroke-dasharray="6,4" />
+  <!-- Left Pupil 473 Highlight -->
+  <circle cx="370" cy="220" r="7" fill="#22d3ee" stroke="#111318" stroke-width="2" />
+  <circle cx="370" cy="220" r="14" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.5" />
+  
+  <!-- Right Pupil 468 Highlight -->
+  <circle cx="230" cy="220" r="7" fill="#22d3ee" stroke="#111318" stroke-width="2" />
+  <circle cx="230" cy="220" r="14" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.5" />
+
+  <!-- 2. ETE (Ear-to-Ear) Width Line (234 to 454) -->
+  <line x1="147" y1="250" x2="453" y2="250" stroke="url(#purpleGrad)" stroke-width="2.5" stroke-dasharray="6,4" />
+  <!-- Left Ear Landmark 454 Highlight -->
+  <circle cx="453" cy="250" r="7" fill="#c084fc" stroke="#111318" stroke-width="2" />
+  <circle cx="453" cy="250" r="14" fill="none" stroke="#c084fc" stroke-width="1" opacity="0.5" />
+  
+  <!-- Right Ear Landmark 234 Highlight -->
+  <circle cx="147" cy="250" r="7" fill="#c084fc" stroke="#111318" stroke-width="2" />
+  <circle cx="147" cy="250" r="14" fill="none" stroke="#c084fc" stroke-width="1" opacity="0.5" />
+
+
+  <!-- ================= LABELS & CALLOUTS ================= -->
+
+  <!-- Title -->
+  <text x="300" y="50" fill="#ffffff" font-size="20" font-weight="800" text-anchor="middle" letter-spacing="1">BIOMETRIC LANDMARKS MAP</text>
+  <text x="300" y="75" fill="#8892b0" font-size="12" text-anchor="middle">IPD (VST404) &amp; Ear-to-Ear Width (VST405) Calibration Guides</text>
+
+  <!-- Landmark 468 (Right Pupil) Label -->
+  <path d="M 230 220 L 190 150 L 110 150" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.7" />
+  <circle cx="110" cy="150" r="3" fill="#22d3ee" />
+  <text x="105" y="145" fill="#22d3ee" font-size="12" font-weight="700" text-anchor="start">Landmark 468</text>
+  <text x="105" y="162" fill="#8892b0" font-size="10" text-anchor="start">Right Pupil Center</text>
+
+  <!-- Landmark 473 (Left Pupil) Label -->
+  <path d="M 370 220 L 410 150 L 490 150" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.7" />
+  <circle cx="490" cy="150" r="3" fill="#22d3ee" />
+  <text x="495" y="145" fill="#22d3ee" font-size="12" font-weight="700" text-anchor="end">Landmark 473</text>
+  <text x="495" y="162" fill="#8892b0" font-size="10" text-anchor="end">Left Pupil Center</text>
+
+  <!-- Landmark 234 (Right Ear Contour) Label -->
+  <path d="M 147 250 L 107 310 L 40 310" fill="none" stroke="#c084fc" stroke-width="1" opacity="0.7" />
+  <circle cx="40" cy="310" r="3" fill="#c084fc" />
+  <text x="35" y="305" fill="#c084fc" font-size="12" font-weight="700" text-anchor="start">Landmark 234</text>
+  <text x="35" y="322" fill="#8892b0" font-size="10" text-anchor="start">Right Ear Tragus</text>
+
+  <!-- Landmark 454 (Left Ear Contour) Label -->
+  <path d="M 453 250 L 493 310 L 560 310" fill="none" stroke="#c084fc" stroke-width="1" opacity="0.7" />
+  <circle cx="560" cy="310" r="3" fill="#c084fc" />
+  <text x="565" y="305" fill="#c084fc" font-size="12" font-weight="700" text-anchor="end">Landmark 454</text>
+  <text x="565" y="322" fill="#8892b0" font-size="10" text-anchor="end">Left Ear Tragus</text>
+
+  <!-- Dimension Indicator Labels -->
+  <!-- IPD Indicator -->
+  <rect x="235" y="188" width="130" height="22" fill="#111318" rx="4" stroke="#22d3ee" stroke-width="1" />
+  <text x="300" y="202" fill="#22d3ee" font-size="10" font-weight="700" text-anchor="middle">IPD (VST404) ~ 63mm</text>
+
+  <!-- ETE Width Indicator -->
+  <rect x="220" y="262" width="160" height="22" fill="#111318" rx="4" stroke="#c084fc" stroke-width="1" />
+  <text x="300" y="276" fill="#c084fc" font-size="10" font-weight="700" text-anchor="middle">ETE Width (VST405) ~ 140mm</text>
+</svg>
