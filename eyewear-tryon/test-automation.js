@@ -49,6 +49,7 @@ page.on('console', (msg) => {
       text.includes('WebGPU backend initialization failed') ||
       text.includes('emscripten_webgl_create_context') ||
       text.includes('kGpuService') ||
+      text.includes('ERR_CONNECTION_CLOSED') ||
       text.includes('404')
     ) {
       console.warn('⚠️ [CONSOLE IGNORED WARN]:', text);

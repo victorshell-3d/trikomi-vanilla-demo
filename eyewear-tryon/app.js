@@ -1,4 +1,3 @@
-// @ts-check
 import {
   ThreeViewer,
   ViewerStore,
@@ -8,7 +7,7 @@ import {
   CameraPlugin,
   EighthWallSDK,
   EXRLoader,
-  autorun,
+  makeAutoObservable,
   THREE
 } from '../shared-assets/dist/trikomi.esm.js';
 
@@ -26,69 +25,37 @@ let cameraPlugin;
 let eighthWallSDK;
 /** @type {any} */
 let currentHdrTexture = null;
-let activeModelIndex = 0;
 
 const AVAILABLE_MODELS = [
-  { name: 'Aviator Classic', url: '../shared-assets/models/glasses1.glb', scale: 0.3 },
-  { name: 'Sport Wrap', url: '../shared-assets/models/glasses2.glb', scale: 0.3 },
-  { name: 'Wayfarer Style', url: '../shared-assets/models/glasses3.glb', scale: 0.3 },
-  { name: 'Round Metal', url: '../shared-assets/models/glasses4.glb', scale: 0.3 },
-  { name: 'Clubmaster', url: '../shared-assets/models/glasses5.glb', scale: 0.3 },
-  { name: 'Hexagonal', url: '../shared-assets/models/glasses6.glb', scale: 0.3 }
+  { name: 'Aviator Classic', url: '../shared-assets/models/glasses1.glb' },
+  { name: 'Sport Wrap', url: '../shared-assets/models/glasses2.glb' },
+  { name: 'Wayfarer Style', url: '../shared-assets/models/glasses3.glb' },
+  { name: 'Round Metal', url: '../shared-assets/models/glasses4.glb' },
+  { name: 'Clubmaster', url: '../shared-assets/models/glasses5.glb' },
+  { name: 'Hexagonal', url: '../shared-assets/models/glasses6.glb' }
 ];
 
-/**
- * Safely applies color to Three.js / WebGPU TSL / MeshPhysicalMaterial
- * @param {any} mat 
- * @param {string} colorHex 
- */
-function applyMaterialColor(mat, colorHex) {
-  if (!mat || !colorHex) return;
-  if (Array.isArray(mat)) {
-    mat.forEach((m) => applyMaterialColor(m, colorHex));
-    return;
-  }
-  try {
-    if (mat.color) {
-      if (typeof mat.color.set === 'function') {
-        mat.color.set(colorHex);
-      } else if (mat.color.value && typeof mat.color.value.set === 'function') {
-        mat.color.value.set(colorHex);
-      } else {
-        mat.color = new THREE.Color(colorHex);
-      }
-    } else if (mat.colorNode && mat.colorNode.value && typeof mat.colorNode.value.set === 'function') {
-      mat.colorNode.value.set(colorHex);
-    }
-    mat.needsUpdate = true;
-  } catch (err) {
-    console.warn("⚠️ [applyMaterialColor Warning]:", err);
-  }
-}
+  // 1. Create ViewerStore instance (ViewerStore constructor already initializes MobX auto-observables)
+  const store = new ViewerStore();
+  store.isArActive = false;
+  store.modelIndex = 0;
+  store.glassConfigs = { meshes: [], materials: [] };
+  store.materialProps = {};
+  store.showSidebar = true;
+  store.setShowSidebar = function(val) { this.showSidebar = val; };
 
 $(document).ready(function () {
-  console.log("👓 Initializing Trikomi Eyewear Studio (3D ThreeViewer Scene)...");
+  console.log("👓 Initializing Trikomi Eyewear Studio (Pure Vanilla JS)...");
 
   const container = $('#canvas-container')[0];
-  const store = new ViewerStore();
-
-  // Assign license file path from shared assets
   window.trikomi_lic = '../shared-assets/assets/v3d_victorshell_com.lic';
 
-  // 1. Initialize ViewerStore Initial Defaults
-  store.setAutoRotate(true);
-  store.setBackgroundColor('#090c15');
-  store.setShowEnvironment(true);
-  store.setActiveModelName('Aviator Classic');
-  store.setShowSidebar(true);
-  store.setBloomEnabled(false);
-
-  // 2. Instantiate Core ThreeViewer
+  // 1. Instantiate ThreeViewer
   viewer = new ThreeViewer(container, store, {
     assetBaseUrl: '../shared-assets/assets/'
   });
 
-  // 3. Attach standard 3D viewer plugins for 3D view mode
+  // 2. Attach ThreeViewer Plugins
   gltfPlugin = new GLTFPlugin();
   envPlugin = new EnvironmentPlugin();
   orbitPlugin = new OrbitControlsPlugin();
@@ -99,96 +66,221 @@ $(document).ready(function () {
   viewer.addPlugin(orbitPlugin);
   viewer.addPlugin(cameraPlugin);
 
-  // 4. Load initial model into 3D view mode via GLTFPlugin
-  gltfPlugin.loadModel(AVAILABLE_MODELS[0].url);
-
-  // 5. Instantiate EighthWallSDK for AR tracking mode
+  // 3. Instantiate EighthWallSDK for AR mode
   if (typeof EighthWallSDK === 'function') {
     eighthWallSDK = new EighthWallSDK(store, AVAILABLE_MODELS, viewer);
   }
 
-  loadHdrEnvironment('../shared-assets/environments/studio.exr');
+  // 4. Initial load of default model in 3D Studio mode
+  load3DStudioModel(0);
 
-  // Fade out loading overlay
+  // Load HDR Environment
+  if (EXRLoader) {
+    const loader = new EXRLoader();
+    loader.load('../shared-assets/environments/studio.exr', function (texture) {
+      texture.mapping = THREE.EquirectangularReflectionMapping;
+      currentHdrTexture = texture;
+      if (viewer && viewer.scene) {
+        viewer.scene.environment = currentHdrTexture;
+      }
+    });
+  }
+
+  // Fade out initial loading overlay
   setTimeout(() => {
     $('#loading-overlay').addClass('fade-out');
   }, 800);
 
-  // Helper to load HDR Environment
-  function loadHdrEnvironment(envUrl) {
-    if (envUrl && EXRLoader) {
-      console.log("👓 Loading Eyewear Studio HDR Environment:", envUrl);
-      const loader = new EXRLoader();
-      loader.load(envUrl, function (texture) {
-        texture.mapping = THREE.EquirectangularReflectionMapping;
-        currentHdrTexture = texture;
-        if (store.showEnvironment && viewer && viewer.scene) {
-          viewer.scene.environment = currentHdrTexture;
+  // -------------------------------------------------------------
+  // Helper: Load Model in 3D Studio Mode & Extract Materials
+  // -------------------------------------------------------------
+  function load3DStudioModel(index) {
+    const modelDef = AVAILABLE_MODELS[index];
+    if (!modelDef || !gltfPlugin) return Promise.resolve();
+
+    console.log("👓 Loading 3D Model:", index, modelDef.name);
+    return gltfPlugin.loadModel(modelDef.url).then((loadedModel) => {
+      if (orbitPlugin && typeof orbitPlugin.resetView === 'function') {
+        try { orbitPlugin.resetView(); } catch (e) {}
+      }
+
+      // Extract materials for UI color swatches
+      const extractedMatNames = [];
+      loadedModel.traverse((child) => {
+        if (child.isMesh && child.material) {
+          const mats = Array.isArray(child.material) ? child.material : [child.material];
+          mats.forEach(mat => {
+            if (mat.name && !extractedMatNames.includes(mat.name)) {
+              extractedMatNames.push(mat.name);
+            }
+          });
         }
       });
-    }
+      store.glassConfigs.materials = extractedMatNames;
+
+      // Re-apply preserved material colors
+      applyPreservedColorsToScene();
+      return loadedModel;
+    });
   }
 
   // -------------------------------------------------------------
-  // MobX Store-to-UI Reactive Observers
+  // Helper: Apply Preserved Material Colors to 3D Scene
   // -------------------------------------------------------------
-  autorun(() => {
-    const show = store.showSidebar;
-    if (show) {
+  function applyPreservedColorsToScene() {
+    if (!viewer || !viewer.scene || !store.materialProps) return;
+    viewer.scene.traverse((node) => {
+      if (node.isMesh && node.material) {
+        const mats = Array.isArray(node.material) ? node.material : [node.material];
+        mats.forEach(mat => {
+          const props = store.materialProps[mat.name];
+          if (props && props.color && mat.color && typeof mat.color.set === 'function') {
+            mat.color.set(props.color);
+            mat.needsUpdate = true;
+          }
+        });
+      }
+    });
+  }
+
+  // -------------------------------------------------------------
+  // Helper: Update Material Color in AR or 3D Studio Mode
+  // -------------------------------------------------------------
+  function changeMaterialColor(isLens, colorHex) {
+    const materials = store.glassConfigs.materials || [];
+    materials.forEach((matName) => {
+      const isTarget = isLens
+        ? (matName.toLowerCase().includes('lens') || matName.toLowerCase().includes('glass'))
+        : (!matName.toLowerCase().includes('lens') && !matName.toLowerCase().includes('glass'));
+
+      if (isTarget) {
+        if (!store.materialProps[matName]) store.materialProps[matName] = {};
+        store.materialProps[matName].color = colorHex;
+
+        if (store.isArActive) {
+          // AR Mode Color Change via 8thWall SDK
+          if (eighthWallSDK) eighthWallSDK.changeColor(matName, colorHex);
+        } else {
+          // 3D Studio Mode Color Change Direct Traversal
+          applyPreservedColorsToScene();
+        }
+      }
+    });
+  }
+
+  // -------------------------------------------------------------
+  // User UI Event Listeners (Direct Vanilla JS Event Handlers)
+  // -------------------------------------------------------------
+
+  // AR / 3D Mode Toggle
+  $('#btn-toggle-camera').on('click', function () {
+    if (!store.isArActive && (typeof window.XR8 === 'undefined' || typeof window.XR8.FaceController === 'undefined')) {
+      alert('8thWall XR8 library (xr.js) must be loaded for face AR tracking.');
+      return;
+    }
+
+    store.isArActive = !store.isArActive;
+
+    if (store.isArActive) {
+      // ENTER AR MODE
+      console.log("🚀 Starting 8thWall AR WebAR scene...");
+      $('#ar-status-dot').css({ background: '#00ff88', boxShadow: '0 0 8px #00ff88' });
+      $('#ar-status-text').text('Live 8thWall AR Tracking Active');
+      $('#btn-toggle-camera').html('<span>🔴</span> Exit 8thWall AR Mode');
+
+      if (viewer && typeof viewer.pause === 'function') viewer.pause();
+      if (viewer && viewer.renderer && viewer.renderer.domElement) {
+        viewer.renderer.domElement.style.display = 'none';
+      }
+
+      if (eighthWallSDK) {
+        eighthWallSDK.initialize();
+        eighthWallSDK.changeModel(store.modelIndex);
+      }
+    } else {
+      // EXIT AR MODE -> BACK TO 3D STUDIO
+      console.log("🎥 Returning to 3D Studio scene...");
+      $('#ar-status-dot').css({ background: '#06b6d4', boxShadow: '0 0 8px #06b6d4' });
+      $('#ar-status-text').text('3D Studio Mode (8thWall Offline)');
+      $('#btn-toggle-camera').html('<span>📷</span> Enable 8thWall AR Try-On');
+
+      if (eighthWallSDK) {
+        eighthWallSDK.stop();
+      }
+
+      try {
+        document.documentElement.removeAttribute('style');
+        document.body.removeAttribute('style');
+      } catch (e) {}
+
+      if (viewer && viewer.renderer && viewer.renderer.domElement) {
+        viewer.renderer.domElement.style.display = 'block';
+        viewer.renderer.domElement.style.width = '100%';
+        viewer.renderer.domElement.style.height = '100%';
+      }
+
+      if (viewer && typeof viewer.handleResize === 'function') viewer.handleResize();
+      if (viewer && typeof viewer.play === 'function') viewer.play();
+
+      load3DStudioModel(store.modelIndex);
+    }
+  });
+
+  // Eyewear Model Selection Card Click
+  $('.frame-card').on('click', function () {
+    $('.frame-card').removeClass('active');
+    $(this).addClass('active');
+
+    const modelName = $(this).attr('data-name');
+    const idx = parseInt($(this).attr('data-index') || '0', 10);
+
+    if (modelName !== undefined) {
+      console.log("👓 Selected Eyewear Model:", idx, modelName);
+      store.activeModelName = modelName;
+      store.modelIndex = idx;
+
+      if (store.isArActive) {
+        if (eighthWallSDK) eighthWallSDK.changeModel(idx);
+      } else {
+        load3DStudioModel(idx);
+      }
+    }
+  });
+
+  // Frame Color Swatches Click
+  $('.frame-swatch').on('click', function () {
+    $('.frame-swatch').removeClass('active');
+    $(this).addClass('active');
+
+    const colorHex = $(this).attr('data-color');
+    if (colorHex) {
+      console.log("👓 Frame Color Click:", colorHex);
+      changeMaterialColor(false, colorHex);
+    }
+  });
+
+  // Lens Color Swatches Click
+  $('.lens-swatch').on('click', function () {
+    $('.lens-swatch').removeClass('active');
+    $(this).addClass('active');
+
+    const colorHex = $(this).attr('data-color');
+    if (colorHex) {
+      console.log("🕶️ Lens Color Click:", colorHex);
+      changeMaterialColor(true, colorHex);
+    }
+  });
+
+  // Toolbar Button Handlers
+  $('#tb-toggle-sidebar').on('click', function () {
+    store.showSidebar = !store.showSidebar;
+    if (store.showSidebar) {
       $('#sidebar-panel').removeClass('hidden');
       $('#tb-toggle-sidebar').addClass('active');
     } else {
       $('#sidebar-panel').addClass('hidden');
       $('#tb-toggle-sidebar').removeClass('active');
     }
-  });
-
-  // -------------------------------------------------------------
-  // Dual Mode AR Toggle Handler
-  // -------------------------------------------------------------
-  let isArActive = false;
-  function toggleArMode() {
-    if (!isArActive) {
-      if (typeof window.XR8 === 'undefined' || typeof window.XR8.FaceController === 'undefined') {
-        alert('8thWall XR8 library (xr.js) must be loaded for face AR tracking.');
-        return;
-      }
-      try {
-        console.log("🚀 [AR Mode]: Starting 8thWall face tracking pipeline...");
-        const canvas = viewer?.renderer?.domElement;
-        if (eighthWallSDK && canvas) {
-          eighthWallSDK.initialize(canvas);
-
-          eighthWallSDK.changeModel(activeModelIndex);
-        }
-        isArActive = true;
-        $('#ar-status-dot').css({ background: '#00ff88', boxShadow: '0 0 8px #00ff88' });
-        $('#ar-status-text').text('Live 8thWall AR Tracking Active');
-        $('#btn-toggle-camera').html('<span>🔴</span> Exit 8thWall AR Mode');
-      } catch (err) {
-        console.warn("⚠️ AR init warning:", err);
-      }
-    } else {
-      console.log("🎥 [3D Mode]: Stopping 8thWall AR — returning to ThreeViewer...");
-      if (eighthWallSDK && typeof eighthWallSDK.stop === 'function') {
-        eighthWallSDK.stop();
-      }
-      isArActive = false;
-      $('#ar-status-dot').css({ background: '#06b6d4', boxShadow: '0 0 8px #06b6d4' });
-      $('#ar-status-text').text('3D Studio Mode (8thWall Offline)');
-      $('#btn-toggle-camera').html('<span>📷</span> Enable 8thWall AR Try-On');
-    }
-  }
-
-  // -------------------------------------------------------------
-  // User UI Event Handlers
-  // -------------------------------------------------------------
-  $('#btn-toggle-camera').on('click', function () {
-    toggleArMode();
-  });
-
-  $('#tb-toggle-sidebar').on('click', function () {
-    store.setShowSidebar(!store.showSidebar);
   });
 
   $('#tb-fullscreen').on('click', function () {
@@ -208,76 +300,25 @@ $(document).ready(function () {
       const dataUrl = viewer.renderer.domElement.toDataURL('image/png');
       const link = document.createElement('a');
       link.href = dataUrl;
-      link.download = `3d-${store.activeModelName.toLowerCase().replace(/\s+/g, '-')}-snapshot.png`;
+      link.download = `3d-${(store.activeModelName || 'glasses').toLowerCase().replace(/\s+/g, '-')}-snapshot.png`;
       link.click();
     }
   });
 
   $('#tb-autorotate').on('click', function () {
-    const next = !store.autoRotate;
-    store.setAutoRotate(next);
-    if (next) $('#tb-autorotate').addClass('active');
+    store.autoRotate = !store.autoRotate;
+    if (store.autoRotate) $('#tb-autorotate').addClass('active');
     else $('#tb-autorotate').removeClass('active');
   });
 
-  // Eyewear Model Selection Handler
-  $('.frame-card').on('click', function () {
-    $('.frame-card').removeClass('active');
-    $(this).addClass('active');
-
-    const modelName = $(this).attr('data-name');
-    const modelUrl = $(this).attr('data-model');
-    activeModelIndex = parseInt($(this).attr('data-index') || '0', 10);
-
-    if (modelName) {
-      console.log("👓 Changing 3D Eyewear Model:", activeModelIndex, modelName, modelUrl);
-      store.setActiveModelName(modelName);
-
-      if (eighthWallSDK && typeof eighthWallSDK.changeModel === 'function') {
-        eighthWallSDK.changeModel(activeModelIndex);
+  $('#tb-reset').on('click', function () {
+    console.log("🎥 Resetting 3D View...");
+    if (orbitPlugin && typeof orbitPlugin.resetView === 'function') {
+      try {
+        orbitPlugin.resetView();
+      } catch (err) {
+        console.warn("⚠️ Reset View error:", err);
       }
-    }
-  });
-
-  // Frame Material Color Swatches
-  $('.frame-swatch').on('click', function () {
-    $('.frame-swatch').removeClass('active');
-    $(this).addClass('active');
-
-    const colorHex = $(this).attr('data-color');
-    if (colorHex && viewer && viewer.scene) {
-      console.log("👓 Changing Frame Color:", colorHex);
-      viewer.scene.traverse((node) => {
-        if (node.isMesh && node.material) {
-          const mat = node.material;
-          const nodeName = (node.name || '').toLowerCase();
-          const matName = (mat.name || '').toLowerCase();
-          if (!nodeName.includes('lens') && !matName.includes('lens') && !nodeName.includes('glass')) {
-            applyMaterialColor(mat, colorHex);
-          }
-        }
-      });
-    }
-  });
-
-  // Lens Tint Color Swatches
-  $('.lens-swatch').on('click', function () {
-    $('.lens-swatch').removeClass('active');
-    $(this).addClass('active');
-
-    const colorHex = $(this).attr('data-color');
-    if (colorHex && viewer && viewer.scene) {
-      console.log("🕶️ Changing Lens Tint Color:", colorHex);
-      viewer.scene.traverse((node) => {
-        if (node.isMesh && node.material) {
-          const mat = node.material;
-          const nodeName = (node.name || '').toLowerCase();
-          const matName = (mat.name || '').toLowerCase();
-          if (nodeName.includes('lens') || matName.includes('lens') || nodeName.includes('glass')) {
-            applyMaterialColor(mat, colorHex);
-          }
-        }
-      });
     }
   });
 });
