@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trikomi 3D Platform — Vanilla JS E-Commerce Showcase</title>
+  <meta name="description" content="Standalone, zero-framework reference implementations for 3D Product Configurators, AR Try-On, and Diamond Shaders powered by the Trikomi 3D WebGPU Engine.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: rgba(15, 23, 42, 0.7);
+      --border: rgba(255, 255, 255, 0.1);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-cyan: #00f2fe;
+      --accent-purple: #818cf8;
+      --accent-pink: #ec4899;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+    }
+    header {
+      padding: 40px 24px 20px;
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 20px;
+      background: rgba(0, 242, 254, 0.1);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      color: var(--accent-cyan);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+    main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+    .demo-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      backdrop-filter: blur(12px);
+      text-decoration: none;
+      color: inherit;
+    }
+    .demo-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(0, 242, 254, 0.4);
+      box-shadow: 0 12px 32px rgba(0, 242, 254, 0.15);
+    }
+    .card-icon {
+      font-size: 2.2rem;
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    .card-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: background 0.2s ease;
+    }
+    .demo-card:hover .card-btn {
+      background: var(--accent-cyan);
+      border-color: var(--accent-cyan);
+      color: #000;
+    }
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 24px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-family: 'Space Mono', monospace;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="badge">STANDALONE VANILLA JS SHOWCASE</div>
+    <h1>Trikomi 3D E-Commerce <span class="gradient-text">Demos</span></h1>
+    <p class="subtitle">Framework-agnostic reference implementations for Shopify, WooCommerce, and custom web applications.</p>
+  </header>
+
+  <main>
+    <div class="demo-grid">
+      <a href="./jewelry-configurator/index.html" class="demo-card">
+        <div>
+          <div class="card-icon">💎</div>
+          <h2 class="card-title">Jewelry Configurator</h2>
+          <p class="card-desc">Luxury diamond ring PDP customizer with dispersion shaders, gold finishes, and dynamic price calculation.</p>
+        </div>
+        <div class="card-btn">
+          <span>Launch Demo</span>
+          <span>→</span>
+        </div>
+      </a>
+
+      <a href="./sportswear-configurator/index.html" class="demo-card">
+        <div>
+          <div class="card-icon">👕</div>
+          <h2 class="card-title">Sportswear Configurator</h2>
+          <p class="card-desc">3D jersey customizer with texture compositing, dynamic part colors, and chest logo placement.</p>
+        </div>
+        <div class="card-btn">
+          <span>Launch Demo</span>
+          <span>→</span>
+        </div>
+      </a>
+
+      <a href="./eyewear-tryon/index.html" class="demo-card">
+        <div>
+          <div class="card-icon">👓</div>
+          <h2 class="card-title">Eyewear AR Try-On</h2>
+          <p class="card-desc">Glasses WebAR try-on studio with face landmark tracking, snapshot capture, and glassmorphic UI controls.</p>
+        </div>
+        <div class="card-btn">
+          <span>Launch Demo</span>
+          <span>→</span>
+        </div>
+      </a>
+
+      <a href="./face-mocap/index.html" class="demo-card">
+        <div>
+          <div class="card-icon">📷</div>
+          <h2 class="card-title">Face MoCap Studio</h2>
+          <p class="card-desc">Real-time webcam facial tracking with MediaPipe landmark debug canvas and 3D face overlays.</p>
+        </div>
+        <div class="card-btn">
+          <span>Launch Demo</span>
+          <span>→</span>
+        </div>
+      </a>
+
+      <a href="./3d-viewer/index.html" class="demo-card">
+        <div>
+          <div class="card-icon">🔍</div>
+          <h2 class="card-title">3D Product Inspector</h2>
+          <p class="card-desc">Multi-model 3D inspector with material slot scanning, HDR lighting environment presets, and camera controls.</p>
+        </div>
+        <div class="card-btn">
+          <span>Launch Demo</span>
+          <span>→</span>
+        </div>
+      </a>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2026 VictorShell 3D Platform. All rights reserved. | <a href="https://victorshell.com" style="color: var(--accent-cyan); text-decoration: none;">victorshell.com</a></p>
+  </footer>
+</body>
+</html>
