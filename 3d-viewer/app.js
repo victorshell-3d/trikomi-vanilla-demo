@@ -1,4 +1,3 @@
-// @ts-check
 import {
   ThreeViewer,
   ViewerStore,
@@ -9,7 +8,9 @@ import {
   BloomPlugin,
   EXRLoader,
   autorun,
-  THREE
+  THREE,
+  applyMaterialColor,
+  scanModelMaterialGroups
 } from '../shared-assets/dist/trikomi.esm.js';
 
 /** @type {ThreeViewer} */
@@ -26,72 +27,14 @@ let cameraPlugin;
 let bloomPlugin;
 /** @type {any} */
 let currentHdrTexture = null;
-/** @type {Map<string, { groupName: string, meshes: any[], materials: any[] }>} */
+/** @type {Map<string, any>} */
 let modelMaterialGroups = new Map();
 
-/**
- * Safely applies color to Three.js / WebGPU TSL / MeshPhysicalMaterial
- * @param {any} mat 
- * @param {string} colorHex 
- */
-function applyMaterialColor(mat, colorHex) {
-  if (!mat || !colorHex) return;
-  if (Array.isArray(mat)) {
-    mat.forEach((m) => applyMaterialColor(m, colorHex));
-    return;
+function updateViewerMaterialGroups() {
+  if (viewer && viewer.scene) {
+    modelMaterialGroups = scanModelMaterialGroups(viewer.scene, false);
+    console.log(`✨ Scanned ${modelMaterialGroups.size} groupwise material slots in 3D Viewer:`, Array.from(modelMaterialGroups.keys()));
   }
-  try {
-    if (mat.color) {
-      if (typeof mat.color.set === 'function') {
-        mat.color.set(colorHex);
-      } else if (mat.color.value && typeof mat.color.value.set === 'function') {
-        mat.color.value.set(colorHex);
-      } else {
-        mat.color = new THREE.Color(colorHex);
-      }
-    } else if (mat.colorNode && mat.colorNode.value && typeof mat.colorNode.value.set === 'function') {
-      mat.colorNode.value.set(colorHex);
-    }
-    mat.needsUpdate = true;
-  } catch (err) {
-    console.warn("⚠️ [applyMaterialColor Warning]:", err);
-  }
-}
-
-/**
- * Dynamically scans the loaded 3D scene and extracts groupwise material slots
- */
-function scanModelMaterialGroups() {
-  if (!viewer || !viewer.scene) return;
-  modelMaterialGroups.clear();
-
-  viewer.scene.traverse((child) => {
-    if (/** @type {any} */ (child).isMesh && /** @type {any} */ (child).material) {
-      const mesh = /** @type {any} */ (child);
-      let groupName = mesh.parent?.name && mesh.parent.name !== 'Scene' && mesh.parent.name !== 'ModelGroup'
-        ? mesh.parent.name
-        : (mesh.name || 'Primary Material');
-
-      if (!modelMaterialGroups.has(groupName)) {
-        modelMaterialGroups.set(groupName, {
-          groupName,
-          meshes: [],
-          materials: []
-        });
-      }
-
-      const grp = modelMaterialGroups.get(groupName);
-      if (grp) {
-        grp.meshes.push(mesh);
-        const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-        mats.forEach(m => {
-          if (!grp.materials.includes(m)) grp.materials.push(m);
-        });
-      }
-    }
-  });
-
-  console.log(`✨ Scanned ${modelMaterialGroups.size} groupwise material slots in 3D Viewer:`, Array.from(modelMaterialGroups.keys()));
 }
 
 $(document).ready(function () {
@@ -140,7 +83,7 @@ $(document).ready(function () {
 
   // Fade out loading overlay once initialized
   setTimeout(() => {
-    scanModelMaterialGroups();
+    updateViewerMaterialGroups();
     $('#loading-overlay').addClass('fade-out');
   }, 800);
 
@@ -256,7 +199,7 @@ $(document).ready(function () {
       store.setActiveModelName(modelText.split('(')[0].trim());
       viewer.loadModelFromUrl(modelUrl);
       setTimeout(() => {
-        scanModelMaterialGroups();
+        updateViewerMaterialGroups();
       }, 1000);
     }
   });

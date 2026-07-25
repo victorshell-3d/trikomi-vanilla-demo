@@ -1,6 +1,6 @@
 import puppeteer from 'puppeteer';
 
-const TARGET_URL = 'http://localhost:3005/jewelry-configurator/';
+const TARGET_URL = 'http://localhost:8080/jewelry-configurator/';
 
 console.log('🤖 Starting Automated E2E Browser Audit for Jewelry Configurator Demo...');
 

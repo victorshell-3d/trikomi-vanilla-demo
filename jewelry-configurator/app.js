@@ -1,4 +1,3 @@
-// @ts-check
 import {
   ThreeViewer,
   ViewerStore,
@@ -10,7 +9,9 @@ import {
   BloomPlugin,
   EXRLoader,
   autorun,
-  THREE
+  THREE,
+  applyMaterialColor,
+  scanModelMaterialGroups
 } from '../shared-assets/dist/trikomi.esm.js';
 
 /** @type {ThreeViewer} */
@@ -29,85 +30,14 @@ let diamondPlugin;
 let bloomPlugin;
 /** @type {any} */
 let currentHdrTexture = null;
-/** @type {Map<string, { groupName: string, meshes: any[], materials: any[], isGem: boolean }>} */
+/** @type {Map<string, any>} */
 let modelMaterialGroups = new Map();
 
-/**
- * Safely applies color to Three.js / WebGPU TSL / MeshPhysicalMaterial
- * @param {any} mat 
- * @param {string} colorHex 
- */
-function applyMaterialColor(mat, colorHex) {
-  if (!mat || !colorHex) return;
-  if (Array.isArray(mat)) {
-    mat.forEach((m) => applyMaterialColor(m, colorHex));
-    return;
+function updateJewelryMaterialGroups() {
+  if (viewer && viewer.scene) {
+    modelMaterialGroups = scanModelMaterialGroups(viewer.scene, true);
+    console.log(`✨ Scanned ${modelMaterialGroups.size} groupwise jewelry material slots:`, Array.from(modelMaterialGroups.keys()));
   }
-  try {
-    if (mat.color) {
-      if (typeof mat.color.set === 'function') {
-        mat.color.set(colorHex);
-      } else if (mat.color.value && typeof mat.color.value.set === 'function') {
-        mat.color.value.set(colorHex);
-      } else {
-        mat.color = new THREE.Color(colorHex);
-      }
-    } else if (mat.colorNode && mat.colorNode.value && typeof mat.colorNode.value.set === 'function') {
-      mat.colorNode.value.set(colorHex);
-    }
-    mat.needsUpdate = true;
-  } catch (err) {
-    console.warn("⚠️ [applyMaterialColor Warning]:", err);
-  }
-}
-
-/**
- * Dynamically scans the loaded 3D scene and extracts groupwise material slots
- */
-function scanModelMaterialGroups() {
-  if (!viewer || !viewer.scene) return;
-  modelMaterialGroups.clear();
-
-  viewer.scene.traverse((child) => {
-    if (/** @type {any} */ (child).isMesh && /** @type {any} */ (child).material) {
-      const mesh = /** @type {any} */ (child);
-      let groupName = 'Setting & Band';
-
-      const nodeName = (mesh.name || '').toLowerCase();
-      const parentName = (mesh.parent?.name || '').toLowerCase();
-      const matName = Array.isArray(mesh.material)
-        ? (mesh.material[0]?.name || '').toLowerCase()
-        : (mesh.material?.name || '').toLowerCase();
-
-      if (nodeName.includes('diamond') || nodeName.includes('gem') || parentName.includes('diamond') || parentName.includes('gem') || matName.includes('diamond')) {
-        groupName = 'Center Gemstone & Diamonds';
-      } else if (nodeName.includes('shank') || parentName.includes('shank')) {
-        groupName = 'Ring Shank Band';
-      } else if (nodeName.includes('prong') || parentName.includes('prong') || nodeName.includes('bezel')) {
-        groupName = 'Prongs & Accents';
-      }
-
-      if (!modelMaterialGroups.has(groupName)) {
-        modelMaterialGroups.set(groupName, {
-          groupName,
-          meshes: [],
-          materials: [],
-          isGem: groupName.includes('Gemstone')
-        });
-      }
-
-      const grp = modelMaterialGroups.get(groupName);
-      if (grp) {
-        grp.meshes.push(mesh);
-        const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-        mats.forEach(m => {
-          if (!grp.materials.includes(m)) grp.materials.push(m);
-        });
-      }
-    }
-  });
-
-  console.log(`✨ Scanned ${modelMaterialGroups.size} groupwise material slots:`, Array.from(modelMaterialGroups.keys()));
 }
 
 $(document).ready(function () {
@@ -156,7 +86,7 @@ $(document).ready(function () {
 
   // Scan model material groups after load
   setTimeout(() => {
-    scanModelMaterialGroups();
+    updateJewelryMaterialGroups();
     $('#loading-overlay').addClass('fade-out');
   }, 1000);
 
@@ -268,7 +198,7 @@ $(document).ready(function () {
       recalculatePrice();
 
       setTimeout(() => {
-        scanModelMaterialGroups();
+        updateJewelryMaterialGroups();
       }, 1000);
     }
   });

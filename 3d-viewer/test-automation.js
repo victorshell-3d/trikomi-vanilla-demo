@@ -1,6 +1,6 @@
 import puppeteer from 'puppeteer';
 
-const TARGET_URL = 'http://localhost:3005/3d-viewer/';
+const TARGET_URL = 'http://localhost:8080/3d-viewer/';
 
 console.log('🤖 Starting Automated E2E Browser Audit for 3D Viewer Demo...');
 
