@@ -34,6 +34,14 @@ function updateViewerMaterialGroups() {
   if (viewer && viewer.scene) {
     modelMaterialGroups = scanModelMaterialGroups(viewer.scene, false);
     console.log(`✨ Scanned ${modelMaterialGroups.size} groupwise material slots in 3D Viewer:`, Array.from(modelMaterialGroups.keys()));
+
+    const slotSelect = $('#select-material-slot');
+    slotSelect.empty();
+    slotSelect.append('<option value="all">All Material Slots</option>');
+
+    modelMaterialGroups.forEach((_grp, key) => {
+      slotSelect.append(`<option value="${key}">${key}</option>`);
+    });
   }
 }
 
@@ -54,10 +62,8 @@ $(document).ready(function () {
   store.setShowSidebar(true);
 
   // Enable Bloom Post-Processing in ViewerStore
-  store.setBloomEnabled(true);
-  store.setBloomStrength(0.5);
-  store.setBloomRadius(0.3);
-  store.setBloomThreshold(0.9);
+  store.setBloomEnabled(false);
+
 
   // 2. Instantiate Core ThreeViewer with assetBaseUrl pointing to shared-assets/assets
   viewer = new ThreeViewer(container, store, {
@@ -164,9 +170,9 @@ $(document).ready(function () {
 
   $('#tb-fullscreen').on('click', function () {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {});
+      document.documentElement.requestFullscreen().catch(() => { });
     } else {
-      document.exitFullscreen().catch(() => {});
+      document.exitFullscreen().catch(() => { });
     }
   });
 
@@ -209,16 +215,21 @@ $(document).ready(function () {
     $(this).addClass('active');
 
     const colorHex = $(this).attr('data-material-color');
+    const selectedSlot = $('#select-material-slot').val();
+
     if (colorHex && viewer && viewer.scene) {
-      console.log("💍 Changing Groupwise Material Color:", colorHex);
-      if (modelMaterialGroups.size > 0) {
+      console.log(`🎨 Changing Material Color for slot "${selectedSlot}":`, colorHex);
+      if (selectedSlot === 'all') {
         modelMaterialGroups.forEach(grp => {
           grp.materials.forEach(mat => applyMaterialColor(mat, colorHex));
         });
+      } else if (modelMaterialGroups.has(selectedSlot)) {
+        const grp = modelMaterialGroups.get(selectedSlot);
+        grp.materials.forEach(mat => applyMaterialColor(mat, colorHex));
       } else {
         viewer.scene.traverse((node) => {
           if (/** @type {any} */ (node).isMesh && /** @type {any} */ (node).material) {
-            applyMaterialColor(/** @type {any} */ (node).material, colorHex);
+            applyMaterialColor(/** @type {any} */(node).material, colorHex);
           }
         });
       }
