@@ -47,6 +47,13 @@ This repository (`vanilla-demos`) provides standalone, zero-framework reference 
 
 ---
 
+## 💬 Community, Feedback & Issues
+
+> [!NOTE]
+> Have a feature request, bug report, or idea for improvement? Feel free to open an issue or start a discussion on our GitHub repository. We welcome community feedback and contributions!
+
+---
+
 ## 📄 License & Terms
 
 Provided for evaluation and integration reference. For commercial license keys, enterprise SLAs, or custom 3D configurator development, visit [victorshell.com](https://victorshell.com).
