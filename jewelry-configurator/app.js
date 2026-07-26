@@ -203,7 +203,7 @@ $(document).ready(function () {
     }
   });
 
-  // Groupwise Gemstone Finish Swatches
+  // Groupwise Center Gemstone Finish Swatches (Preserving Side Accent Diamonds)
   $('.gem-card').on('click', function () {
     $('.gem-card').removeClass('active');
     $(this).addClass('active');
@@ -211,23 +211,48 @@ $(document).ready(function () {
     const colorHex = $(this).attr('data-gem-color');
     recalculatePrice();
 
-    if (colorHex) {
-      console.log("💎 Changing Groupwise Gemstone Color:", colorHex);
-      const gemGroup = modelMaterialGroups.get('Center Gemstone & Diamonds');
-      if (gemGroup && gemGroup.materials.length > 0) {
-        gemGroup.materials.forEach(mat => applyMaterialColor(mat, colorHex));
-      } else if (viewer && viewer.scene) {
-        // Fallback traversal
-        viewer.scene.traverse((node) => {
-          if (/** @type {any} */ (node).isMesh && /** @type {any} */ (node).material) {
-            const mat = /** @type {any} */ (node).material;
-            const matName = (mat.name || '').toLowerCase();
-            const nodeName = (node.name || '').toLowerCase();
-            if (nodeName.includes('diamond') || nodeName.includes('gem') || matName.includes('diamond')) {
-              applyMaterialColor(mat, colorHex);
-            }
+    if (colorHex && viewer && viewer.scene) {
+      console.log("💎 Changing Center Gemstone Color (Preserving Side Diamonds):", colorHex);
+      
+      let centerGemFound = false;
+
+      viewer.scene.traverse((node) => {
+        if (/** @type {any} */ (node).isMesh && /** @type {any} */ (node).material) {
+          const mesh = /** @type {any} */ (node);
+          const mat = mesh.material;
+          const matName = (mat.name || '').toLowerCase();
+          const nodeName = (mesh.name || '').toLowerCase();
+          const parentName = (mesh.parent?.name || '').toLowerCase();
+
+          // Match Center Gemstone specifically (exclude pave/side diamonds)
+          const isCenterGem = nodeName.includes('center') || 
+                              nodeName.includes('gem') || 
+                              nodeName.includes('solitaire') || 
+                              parentName.includes('center') || 
+                              parentName.includes('gem') ||
+                              matName.includes('center') ||
+                              matName.includes('gem');
+
+          const isSidePave = nodeName.includes('side') || 
+                             nodeName.includes('pave') || 
+                             nodeName.includes('halo') || 
+                             nodeName.includes('accent');
+
+          if (isCenterGem && !isSidePave) {
+            centerGemFound = true;
+            const mats = Array.isArray(mat) ? mat : [mat];
+            mats.forEach(m => applyMaterialColor(m, colorHex));
           }
-        });
+        }
+      });
+
+      // Fallback: If no node specifically named 'center' or 'gem', target primary diamond material
+      if (!centerGemFound) {
+        const gemGroup = modelMaterialGroups.get('Center Gemstone & Diamonds');
+        if (gemGroup && gemGroup.materials.length > 0) {
+          // Color first gemstone material (center gem)
+          applyMaterialColor(gemGroup.materials[0], colorHex);
+        }
       }
     }
   });
