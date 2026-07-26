@@ -218,9 +218,9 @@ $(document).ready(function () {
   store.setBloomEnabled(true);
 
 
-  // 2. Instantiate Core ThreeViewer with assetBaseUrl pointing to shared-assets/assets
+  // 2. Instantiate Core ThreeViewer with assetBaseUrl pointing to shared-assets/
   viewer = new ThreeViewer(container, store, {
-    assetBaseUrl: '../shared-assets/assets/'
+    assetBaseUrl: '../shared-assets/'
   });
 
   // 3. Attach Modular Plugins (including BloomPlugin & DiamondPlugin)
