@@ -4,12 +4,15 @@
   <img src="./shared-assets/logos/trikomi.png" alt="Trikomi 3D Platform Logo" width="120" />
 </p>
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-GitHub_Pages-ff69b4?style=for-the-badge&logo=github)](https://victorshell-3d.github.io/trikomi-vanilla-demo/)
 [![Trikomi 3D Platform](https://img.shields.io/badge/Trikomi_3D_Platform-Vanilla_JS-00f2fe?style=for-the-badge)](https://victorshell.com)
 [![SDK Bundle](https://img.shields.io/badge/SDK-Standalone_ESM-emerald?style=for-the-badge)](https://victorshell.com)
 [![Platforms](https://img.shields.io/badge/Platforms-Shopify_|_WooCommerce_|_Custom-purple?style=for-the-badge)](https://victorshell.com)
 
 Welcome to the **Trikomi 3D Platform** Vanilla JS demonstration suite. This repository contains standalone, zero-framework reference implementations built with pure **HTML5**, **CSS3**, and **JavaScript (ESM)**, engineered specifically for seamless integration into custom web store themes, **Shopify**, **WooCommerce**, and **Magento**.
 
+> 🌐 **Explore Interactive Live Demos**: [https://victorshell-3d.github.io/trikomi-vanilla-demo/](https://victorshell-3d.github.io/trikomi-vanilla-demo/)
+> 
 > 💡 **Looking for the React / MobX Version?** Check out the [React 3D Configurator Suite](https://github.com/victorshell-3d/trikomi-react-demo/) for Next.js and Vite applications.
 
 ---
@@ -28,13 +31,13 @@ The primary objective of this repository is to demonstrate how e-commerce store 
 
 ## 🛍️ Demonstration Suite Overview
 
-| Demo Directory | Industry / Use Case | Key Features |
-| :--- | :--- | :--- |
-| **`sportswear-configurator/`** | Custom Apparel & Teamwear | 3D jersey customizer with texture compositing, dynamic part colors, and chest logo/text raycasting with exact top-down UV placement. |
-| **`jewelry-configurator/`** | Luxury Fine Jewelry & PDP Studio | Solitaire & Halo diamond ring configurator with dispersion shaders, gemstone finishes (Amethyst, Emerald, Sapphire), precious metal swatches, carat weight selectors, and dynamic cart price updates ($2,450.00). |
-| **`face-mocap/`** | Beauty, Eyewear & AR Accessories | Real-time webcam facial tracking with MediaPipe landmark debug canvas and 3D face accessory overlays. Features aspect-ratio auto-scaling and unmirrored UI text overlays. |
-| **`eyewear-tryon/`** | Glasses Try-On Studio | Named eyewear AR try-on studio with glassmorphic UI controls, snapshot capture, and 8thWall attribution compliance. |
-| **`3d-viewer/`** | Product Inspection Studio | Multi-model 3D inspector with dynamic material slot scanning (*Frame*, *Lenses*, *Temples*), HDR lighting environment dropdowns, and target slot color controls. |
+| Demo Directory | Industry / Use Case | Live GitHub Pages Demo | Key Features |
+| :--- | :--- | :--- | :--- |
+| **`jewelry-configurator/`** | Luxury Fine Jewelry & PDP Studio | [💎 Launch Studio](https://victorshell-3d.github.io/trikomi-vanilla-demo/jewelry-configurator/) | Solitaire & Halo diamond ring configurator with dispersion shaders, gemstone finishes (Emerald, Sapphire, Ruby), precious metal swatches, and dynamic cart price updates ($2,450.00). |
+| **`sportswear-configurator/`** | Custom Apparel & Teamwear | [🎽 Launch Customizer](https://victorshell-3d.github.io/trikomi-vanilla-demo/sportswear-configurator/) | 3D jersey customizer with texture compositing, dynamic part colors, and chest logo/text raycasting with exact top-down UV placement. |
+| **`eyewear-tryon/`** | Glasses Try-On Studio | [👓 Launch Try-On](https://victorshell-3d.github.io/trikomi-vanilla-demo/eyewear-tryon/) | Named eyewear AR try-on studio with glassmorphic UI controls, snapshot capture, and 8thWall attribution compliance. |
+| **`face-mocap/`** | Beauty, Eyewear & AR Accessories | [📸 Launch MoCap](https://victorshell-3d.github.io/trikomi-vanilla-demo/face-mocap/) | Real-time webcam facial tracking with MediaPipe landmark debug canvas and 3D face accessory overlays. Features aspect-ratio auto-scaling. |
+| **`3d-viewer/`** | Product Inspection Studio | [🔍 Launch Inspector](https://victorshell-3d.github.io/trikomi-vanilla-demo/3d-viewer/) | Multi-model 3D inspector with dynamic material slot scanning (*Frame*, *Lenses*, *Temples*), HDR lighting environment dropdowns, and target slot color controls. |
 
 ---
 
