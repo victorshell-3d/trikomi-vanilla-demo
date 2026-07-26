@@ -29,13 +29,13 @@ The entire application footprint consists of standard HTML, CSS, and an `app.js`
 
 ### B. Shared Asset Structure (`shared-assets/`)
 All demonstration entrypoints share a single asset repository:
-- `shared-assets/dist/trikomi.esm.js`: Standalone ESM SDK bundle.
-- `shared-assets/assets/v3d_victorshell_com.lic`: Domain-bound cryptographic license file (`window.trikomi_lic`).
-- `shared-assets/models/`: GLTF/GLB binary 3D assets.
-- `shared-assets/environments/`: EXR reflection maps.
+- `shared-assets/dist/version.js`: Central SDK version constant (`SDK_VERSION`).
+- `shared-assets/dist/trikomi.esm.js?v=${SDK_VERSION}`: Standalone ESM SDK bundle with dynamic cache-busting query parameter.
+- `shared-assets/assets/v3d_victorshell_com.lic?v=${SDK_VERSION}`: Domain-bound cryptographic license file (`window.trikomi_lic`).
+- `shared-assets/assets/`: EXR reflection lighting maps and GLTF models referenced via `assetBaseUrl: '../shared-assets/assets/'`.
 
-### C. License Validation Mechanism
-When initialized, the SDK checks `window.trikomi_lic` or queries the domain origin (`window.location.hostname`). The internal WASM security module verifies that the domain (e.g., `victorshell-3d.github.io`) is authorized in the ES256 signed payload before instantiating diamond dispersion nodes or advanced features.
+### C. License Validation & Cache-Busting Mechanism
+When initialized, the SDK checks `window.trikomi_lic` or queries the domain origin (`window.location.hostname`). To prevent stale browser caching when SDK binaries or license authorizations are updated, all entrypoints import `SDK_VERSION` and append dynamic version query strings (`?v=${SDK_VERSION}`). The internal WASM security module verifies that the domain (e.g., `victorshell-3d.github.io`) is authorized in the ES256 signed payload before instantiating diamond dispersion nodes or advanced features.
 
 ## 3. Directory Layout
 ```
