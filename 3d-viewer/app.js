@@ -1,3 +1,4 @@
+import { SDK_VERSION } from '../shared-assets/dist/version.js';
 import {
   ThreeViewer,
   ViewerStore,
@@ -11,7 +12,7 @@ import {
   THREE,
   applyMaterialColor,
   scanModelMaterialGroups
-} from '../shared-assets/dist/trikomi.esm.js';
+} from `../shared-assets/dist/trikomi.esm.js?v=${SDK_VERSION}`;
 
 /** @type {ThreeViewer} */
 let viewer;
@@ -51,8 +52,8 @@ $(document).ready(function () {
   const container = $('#canvas-container')[0];
   const store = new ViewerStore();
 
-  // Assign license file path from shared assets
-  window.trikomi_lic = '../shared-assets/assets/v3d_victorshell_com.lic';
+  // Assign license file path with SDK version cache-busting parameter
+  window.trikomi_lic = `../shared-assets/assets/v3d_victorshell_com.lic?v=${SDK_VERSION}`;
 
   // 1. Initialize ViewerStore Initial Defaults cleanly
   store.setAutoRotate(true);
