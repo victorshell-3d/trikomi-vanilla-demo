@@ -1,10 +1,16 @@
 # Trikomi 3D Platform — Vanilla JS E-Commerce Showcase
 
+<p align="center">
+  <img src="./shared-assets/logos/trikomi.png" alt="Trikomi 3D Platform Logo" width="120" />
+</p>
+
 [![Trikomi 3D Platform](https://img.shields.io/badge/Trikomi_3D_Platform-Vanilla_JS-00f2fe?style=for-the-badge)](https://victorshell.com)
 [![SDK Bundle](https://img.shields.io/badge/SDK-Standalone_ESM-emerald?style=for-the-badge)](https://victorshell.com)
 [![Platforms](https://img.shields.io/badge/Platforms-Shopify_|_WooCommerce_|_Custom-purple?style=for-the-badge)](https://victorshell.com)
 
 Welcome to the **Trikomi 3D Platform** Vanilla JS demonstration suite. This repository contains standalone, zero-framework reference implementations built with pure **HTML5**, **CSS3**, and **JavaScript (ESM)**, engineered specifically for seamless integration into custom web store themes, **Shopify**, **WooCommerce**, and **Magento**.
+
+> 💡 **Looking for the React / MobX Version?** Check out the [React 3D Configurator Suite](https://github.com/victorshell-3d/3dviewer-demo) for Next.js and Vite applications.
 
 ---
 
