@@ -12,7 +12,7 @@ import {
   THREE,
   applyMaterialColor,
   scanModelMaterialGroups
-} from `../shared-assets/dist/trikomi.esm.js?v=${SDK_VERSION}`;
+} from "../shared-assets/dist/trikomi.esm.js";
 
 /** @type {ThreeViewer} */
 let viewer;
