@@ -34,7 +34,9 @@ All demonstration entrypoints share a single asset repository:
 - `shared-assets/assets/`: EXR reflection lighting maps and GLTF models referenced via `assetBaseUrl: '../shared-assets/assets/'`.
 
 ### C. License Validation & Cache-Busting Mechanism
-When initialized, the SDK checks `window.trikomi_config` for an `apiKey` (which fetches a fresh JWT) or a `fallbackJwt` string. To prevent stale browser caching when SDK binaries are updated, all entrypoints import `SDK_VERSION` and append dynamic version query strings (`?v=${SDK_VERSION}`). The internal WASM security module verifies that the domain (e.g., `victorshell-3d.github.io`) is authorized in the ES256 signed payload before instantiating diamond dispersion nodes or advanced features.
+When initialized, the SDK checks `window.trikomi_config` for an `apiKey` (which fetches a fresh JWT) or a `fallbackJwt` string. To prevent stale browser caching when SDK binaries are updated, all entrypoints import `SDK_VERSION` and append dynamic version query strings (`?v=${SDK_VERSION}`). The internal WASM security module verifies that the root domain (e.g., `github.io` for `victorshell-3d.github.io`) is authorized in the ES256 signed payload before instantiating diamond dispersion nodes or advanced features.
+
+**Main-Domain Validation Architecture**: To grant clients full flexibility, the WASM license validator strictly enforces domain identity on the **root main-domain** level. It ignores subdomains (e.g., `app.example.com` becomes `example`) and top-level domains (e.g., `example.co.uk` becomes `example`). This allows users to seamlessly deploy a single license across multiple sites, staging environments, and regional domains without requiring distinct seats.
 
 ## 3. Directory Layout
 ```
@@ -46,7 +48,7 @@ vanilla-demos/
 ├── sportswear-configurator/   # 3D sportswear customizer & logo placement
 ├── shared-assets/             # Pre-compiled SDK bundle & static 3D models
 │   ├── dist/                  # trikomi.esm.js standalone bundle
-│   ├── assets/                # License file & WASM modules
+│   ├── assets/                # WASM modules and textures
 │   ├── models/                # GLTF 3D models
 │   └── environments/          # EXR HDR reflection lighting maps
 └── ARCHITECTURE.md            # Architecture documentation
