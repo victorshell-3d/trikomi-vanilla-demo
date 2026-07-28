@@ -206,7 +206,7 @@ $(document).ready(function () {
   const store = new ViewerStore();
 
   // Assign license file path from shared assets
-  window.trikomi_lic = `../shared-assets/assets/v3d_victorshell_com.lic?v=${SDK_VERSION}`;
+  window.trikomi_lic = `../shared-assets/assets/v3d_victorshell_com.lic`;
 
   // 1. Initialize ViewerStore Initial Defaults cleanly
   store.setAutoRotate(true);

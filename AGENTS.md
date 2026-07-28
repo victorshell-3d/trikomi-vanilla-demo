@@ -19,8 +19,8 @@
    - Always import `SDK_VERSION` from `shared-assets/dist/version.js` and append dynamic version query parameters:
      ```javascript
      import { SDK_VERSION } from '../shared-assets/dist/version.js';
-     import { ThreeViewer, ... } from `../shared-assets/dist/trikomi.esm.js?v=${SDK_VERSION}`;
-     window.trikomi_lic = `../shared-assets/assets/v3d_victorshell_com.lic?v=${SDK_VERSION}`;
+     import { ThreeViewer, ... } from '../shared-assets/dist/trikomi.esm.js';
+     window.trikomi_lic = '../shared-assets/assets/v3d_victorshell_com.lic';
      ```
 
 3. **Centralized Asset Base URL:**
