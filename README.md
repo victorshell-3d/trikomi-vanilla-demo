@@ -34,7 +34,7 @@ This repository (`vanilla-demos`) provides standalone, zero-framework reference 
 
 - [x] Shared single asset directory (`shared-assets/`) containing ESM bundles, models, and environments.
 - [x] Zero framework dependencies (loads standard ES modules via `trikomi.esm.js`).
-- [x] Domain-bound cryptographic license validation via `window.trikomi_lic`.
+- [x] Domain-bound cryptographic license validation via `window.trikomi_config`.
 - [x] Sub-50ms lightweight cold startup time for PageSpeed optimization.
 
 ---

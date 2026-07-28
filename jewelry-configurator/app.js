@@ -206,7 +206,10 @@ $(document).ready(function () {
   const store = new ViewerStore();
 
   // Assign license file path from shared assets
-  window.trikomi_lic = `../shared-assets/assets/v3d_victorshell_com.lic`;
+  window.trikomi_config = {
+      apiKey: 'vk_live_demo_key',
+      fallbackJwt: 'eyJhbGci...' // Loaded from environment or config
+  };
 
   // 1. Initialize ViewerStore Initial Defaults cleanly
   store.setAutoRotate(true);

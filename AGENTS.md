@@ -20,7 +20,7 @@
      ```javascript
      import { SDK_VERSION } from '../shared-assets/dist/version.js';
      import { ThreeViewer, ... } from '../shared-assets/dist/trikomi.esm.js';
-     window.trikomi_lic = '../shared-assets/assets/v3d_victorshell_com.lic';
+     window.trikomi_config = { apiKey: 'vk_live_...' };
      ```
 
 3. **Centralized Asset Base URL:**
