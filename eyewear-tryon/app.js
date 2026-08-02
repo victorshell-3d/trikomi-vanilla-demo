@@ -35,20 +35,23 @@ const AVAILABLE_MODELS = [
   { name: 'Hexagonal', url: '../shared-assets/models/glasses6.glb' }
 ];
 
-  // 1. Create ViewerStore instance (ViewerStore constructor already initializes MobX auto-observables)
-  const store = new ViewerStore();
-  store.isArActive = false;
-  store.modelIndex = 0;
-  store.glassConfigs = { meshes: [], materials: [] };
-  store.materialProps = {};
-  store.showSidebar = true;
-  store.setShowSidebar = function(val) { this.showSidebar = val; };
+// 1. Create ViewerStore instance (ViewerStore constructor already initializes MobX auto-observables)
+const store = new ViewerStore();
+store.isArActive = false;
+store.modelIndex = 0;
+store.glassConfigs = { meshes: [], materials: [] };
+store.materialProps = {};
+store.showSidebar = true;
+store.setShowSidebar = function (val) { this.showSidebar = val; };
 
 $(document).ready(function () {
   console.log("👓 Initializing Trikomi Eyewear Studio (Pure Vanilla JS)...");
 
   const container = $('#canvas-container')[0];
-  window.trikomi_config = { apiKey: 'vk_live_demo_key', fallbackJwt: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJkIjpbInZpY3RvcnNoZWxsLTNkLmdpdGh1Yi5pbyIsImxvY2FsaG9zdCIsIjEyNy4wLjAuMSIsInZpY3RvcnNoZWxsLmNvbSJdLCJwbHVnaW5zIjpbIjNEIFZpZXdlciIsIkpld2VscnkgQ29uZmlndXJhdG9yIiwiU3BvcnRzd2VhciBDb25maWd1cmF0b3IiLCJCb3ggUGFja2FnaW5nIENvbmZpZ3VyYXRvciIsIkZhY2UgTW90aW9uIENhcHR1cmUiLCJFeWV3ZWFyIFZpcnR1YWwgVHJ5LU9uIiwiMzYwXHUwMGIwIFZpcnR1YWwgVG91ciIsIlZpcnR1YWwgM0QgRXhoaWJpdGlvbiJdLCJmZWF0dXJlcyI6WyJWU1QwMDIiLCJWU1QwMDMiLCJWU1QwMDUiLCJWU1QwMDYiLCJWU1QwMDgiLCJWU1QxMDMiLCJWU1QxMDciLCJWU1Q0MDYiLCJWU1Q5MDEiLCJWU1QwMDEiLCJWU1QwMDQiLCJWU1QyMDEiLCJWU1QxMDQiLCJWU1QxMDYiLCJWU1QyMDIiLCJWU1QyMDMiLCJWU1QyMDQiLCJWU1QzMDEiLCJWU1QzMDIiLCJWU1QzMDMiLCJWU1QzMDQiLCJWU1QzMDUiLCJWU1QzMDYiLCJWU1Q0MDEiLCJWU1Q0MDIiLCJWU1Q0MDMiLCJWU1Q0MDQiLCJWU1Q0MDUiLCJWU1Q1MDEiLCJWU1Q1MDIiLCJWU1Q1MDMiLCJWU1Q1MDgiLCJWU1Q1MTIiLCJWU1QyMDUiLCJWU1QyMDYiLCJWU1Q1MDUiLCJWU1Q1MDYiLCJWU1Q1MDciLCJWU1Q1MDkiLCJWU1Q1MTAiLCJWU1Q1MTEiXSwiZSI6MjEwMDY1MDc2MTAwMCwidSI6MSwiYiI6ZmFsc2V9.gopHWyC4ZckjelH4xCb7vZlbnNdz78CAlNG_RE8WvklawoujG0BjeU9DIdAaVCf1HYAzouuKalwkN3nMD-xG2g' };
+  window.trikomi_config = {
+    apiKey: 'vk_live_mvsugpsup02xd1i7',
+    fallbackJwt: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJraWQiOiJ2a19saXZlX212c3VncHN1cDAyeGQxaTciLCJkIjpbImdpdGh1Yi5pbyIsImxvY2FsaG9zdCIsInZpY3RvcnNoZWxsLmNvbSIsIjEyNy4wLjAuMSJdLCJwbHVnaW5zIjpbIjNEIFZpZXdlciIsIkpld2VscnkgQ29uZmlndXJhdG9yIiwiU3BvcnRzd2VhciBDb25maWd1cmF0b3IiLCJCb3ggUGFja2FnaW5nIENvbmZpZ3VyYXRvciIsIkZhY2UgTW90aW9uIENhcHR1cmUiLCJFeWV3ZWFyIFZpcnR1YWwgVHJ5LU9uIiwiMzYwXHUwMGIwIFZpcnR1YWwgVG91ciIsIlZpcnR1YWwgM0QgRXhoaWJpdGlvbiJdLCJmZWF0dXJlcyI6WyJWU1QwMDIiLCJWU1QwMDMiLCJWU1QwMDUiLCJWU1QwMDYiLCJWU1QwMDgiLCJWU1QxMDMiLCJWU1QxMDciLCJWU1Q5MDEiLCJWU1QwMDEiLCJWU1QwMDQiLCJWU1QyMDEiLCJWU1QxMDQiLCJWU1QxMDYiLCJWU1QyMDIiLCJWU1QyMDMiLCJWU1QyMDQiLCJWU1QzMDEiLCJWU1QzMDIiLCJWU1QzMDMiLCJWU1QzMDQiLCJWU1QzMDUiLCJWU1QzMDYiLCJWU1Q0MDEiLCJWU1Q0MDIiLCJWU1Q0MDMiLCJWU1Q0MDQiLCJWU1Q0MDUiLCJWU1Q1MDEiLCJWU1Q1MDIiLCJWU1Q1MDMiLCJWU1Q1MDgiLCJWU1Q1MTIiLCJWU1QyMDUiLCJWU1QyMDYiXSwiZSI6MjEwMTA2MTQyMDAwMCwidSI6MSwiYiI6ZmFsc2V9.wYdTAP91vsvkhl8ZBvKzwMULPKLGEPMULrYXEvUxYH63HJ4_yPjB90ixjsNbQBzExA3ii22HS7ndXr2W_p42Hg'
+  };
 
   // 1. Instantiate ThreeViewer
   viewer = new ThreeViewer(container, store, {
@@ -101,7 +104,7 @@ $(document).ready(function () {
     console.log("👓 Loading 3D Model:", index, modelDef.name);
     return gltfPlugin.loadModel(modelDef.url).then((loadedModel) => {
       if (orbitPlugin && typeof orbitPlugin.resetView === 'function') {
-        try { orbitPlugin.resetView(); } catch (e) {}
+        try { orbitPlugin.resetView(); } catch (e) { }
       }
 
       // Extract materials for UI color swatches
@@ -129,7 +132,7 @@ $(document).ready(function () {
   // -------------------------------------------------------------
   function applyPreservedColorsToScene() {
     if (!store.materialProps) return;
-    
+
     const applyToNode = (node) => {
       if (node.isMesh && node.material) {
         const mats = Array.isArray(node.material) ? node.material : [node.material];
@@ -170,7 +173,7 @@ $(document).ready(function () {
         }
       }
     });
-    
+
     // Explicitly apply to current active scene/AR group
     applyPreservedColorsToScene();
   }
@@ -222,7 +225,7 @@ $(document).ready(function () {
       try {
         document.documentElement.removeAttribute('style');
         document.body.removeAttribute('style');
-      } catch (e) {}
+      } catch (e) { }
 
       if (viewer && viewer.renderer && viewer.renderer.domElement) {
         viewer.renderer.domElement.style.display = 'block';
@@ -308,7 +311,7 @@ $(document).ready(function () {
 
   $('#tb-snapshot').on('click', function () {
     console.log("📸 Taking HD snapshot...");
-    
+
     let canvasElement = null;
     let filePrefix = '3d';
 
@@ -319,7 +322,7 @@ $(document).ready(function () {
           xrScene.renderer.render(xrScene.scene, xrScene.camera);
           canvasElement = xrScene.renderer.domElement;
         }
-      } catch (err) {}
+      } catch (err) { }
       if (!canvasElement) canvasElement = document.getElementById('camerafeed') || document.querySelector('canvas');
       filePrefix = 'ar';
     } else {
