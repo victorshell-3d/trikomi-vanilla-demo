@@ -25,3 +25,12 @@
 
 3. **Centralized Asset Base URL:**
    - Ensure `ThreeViewer` instances point to `assetBaseUrl: '../shared-assets/assets/'` so EXR environments and GLTF models load correctly without 404 errors.
+
+4. **Strict Core Code Freeze:**
+   - The core SDK bundle and core engine APIs are **FROZEN**.
+   - Consume `@trikomi/core` purely via public SDK imports (`shared-assets/dist/trikomi.esm.js`). Never alter or patch core engine files.
+
+5. **Mandatory Core Build & Ecosystem Propagation Protocol:**
+   - Whenever core engine code changes in `3dviewer`, always rebuild the vanilla bundle via `node build-vanilla-bundle.js` from `3dviewer` to update `shared-assets/dist/trikomi.esm.js`.
+   - Ensure `shared-assets/dist/version.js` and demo entrypoints are updated as needed and verified before deployment.
+
