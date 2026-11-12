@@ -1,4 +1,4 @@
-# 🍦 3D Viewer Vanilla Demos (`vanilla-demos`) — Public E-Commerce Reference Suite
+# 🍦 Trikomi Vanilla Demos (`trikomi-vanilla-demos`) — Public E-Commerce Reference Suite
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-GitHub_Pages-ff69b4?style=for-the-badge&logo=github)](https://victorshell-3d.github.io/trikomi-vanilla-demo/)
 [![Platform Ecosystem](https://img.shields.io/badge/Trikomi_Ecosystem-Vanilla_Demos-00f2fe?style=for-the-badge)](https://victorshell.com)
@@ -8,13 +8,13 @@
 
 ## 📌 Repository Role & Context
 
-This repository (`vanilla-demos`) provides standalone, zero-framework reference implementations built with pure **HTML5**, **CSS3**, and **JavaScript (ESM)**. It is specifically designed for developers integrating 3D customization directly into **Shopify**, **WooCommerce**, **Magento**, or custom Liquid/PHP themes without relying on React or Vue.
+This repository (`trikomi-vanilla-demos`) provides standalone, zero-framework reference implementations built with pure **HTML5**, **CSS3**, and **JavaScript (ESM)**. It is specifically designed for developers integrating 3D customization directly into **Shopify**, **WooCommerce**, **Magento**, or custom Liquid/PHP themes without relying on React or Vue.
 
 ### 🌐 Trikomi Platform Ecosystem Bridge:
 - **`victorshell2`** ([Main Portal](https://victorshell.com)): Main SaaS website, user authentication, subscription management, and Super Admin License Issuer.
-- **`3dviewer`** (Source SDK Repo): Monorepo source codebase containing `@trikomi/core` rendering engines and WASM security modules.
-- **`3dviewer-demo`** ([React Demos](https://github.com/victorshell-3d/trikomi-react-demo/)): Public React & TypeScript reference applications.
-- **`vanilla-demos` (This Repository)**: Public zero-framework ESM showcase hosted live on GitHub Pages.
+- **`trikomi`** (Source SDK Repo): Monorepo source codebase containing `@trikomi/core` rendering engines and WASM security modules.
+- **`trikomi-demo`** ([React Demos](https://github.com/victorshell-3d/trikomi-react-demo/)): Public React & TypeScript reference applications.
+- **`trikomi-vanilla-demos` (This Repository)**: Public zero-framework ESM showcase hosted live on GitHub Pages.
 
 ---
 

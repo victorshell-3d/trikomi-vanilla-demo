@@ -2,12 +2,12 @@
 
 ### 🌐 Trikomi Platform Ecosystem Bridge:
 - **`victorshell2`** ([SaaS Portal Architecture](file:///media/vijaykc/projects/victorshell2/ARCHITECTURE.md)): Main SaaS website, user authentication, subscription management, and Super Admin License Manager.
-- **`3dviewer`** ([Source SDK Architecture](file:///media/vijaykc/projects/3dviewer/ARCHITECTURE.md)): Monorepo source code for `@trikomi/core` rendering engines and WASM security modules.
-- **`3dviewer-demo`** ([React Demos Architecture](file:///media/vijaykc/projects/3dviewer-demo/ARCHITECTURE.md)): Public React & TypeScript reference applications.
-- **`vanilla-demos` (This Repository)**: Public zero-framework HTML5/ESM showcase hosted live on GitHub Pages.
+- **`trikomi`** ([Source SDK Architecture](file:///media/vijaykc/projects/trikomi/ARCHITECTURE.md)): Monorepo source code for `@trikomi/core` rendering engines and WASM security modules.
+- **`trikomi-demo`** ([React Demos Architecture](file:///media/vijaykc/projects/trikomi-demo/ARCHITECTURE.md)): Public React & TypeScript reference applications.
+- **`trikomi-vanilla-demos` (This Repository)**: Public zero-framework HTML5/ESM showcase hosted live on GitHub Pages.
 
 ## 1. Overview
-The `vanilla-demos` repository provides zero-framework reference implementations built with pure **HTML5**, **CSS3**, and **JavaScript (ESM)**. It demonstrates how e-commerce store developers can integrate photorealistic 3D product configurators directly into **Shopify (Liquid)**, **WooCommerce (PHP)**, or custom store themes without requiring React or Vue dependencies.
+The `trikomi-vanilla-demos` repository provides zero-framework reference implementations built with pure **HTML5**, **CSS3**, and **JavaScript (ESM)**. It demonstrates how e-commerce store developers can integrate photorealistic 3D product configurators directly into **Shopify (Liquid)**, **WooCommerce (PHP)**, or custom store themes without requiring React or Vue dependencies.
 
 ## 2. Architecture & Design Patterns
 
@@ -38,7 +38,7 @@ When initialized, the SDK checks `window.trikomi_config` to authenticate the hos
 
 ## 3. Directory Layout
 ```
-vanilla-demos/
+trikomi-vanilla-demos/
 ├── 3d-viewer/                 # Generic 3D model inspection studio
 ├── eyewear-tryon/             # AR eyewear preview and try-on studio
 ├── face-mocap/                # Real-time webcam AR face tracking demo
